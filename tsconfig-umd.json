@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig-base.json",
+    "compilerOptions": {
+        "module": "commonjs",
+        "outDir": "dist/umd",
+        "target": "es2015",
+		"emitDeclarationOnly": true,
+		"rootDir": "./public/umd"
+    },
+	"include": ["public/umd/webconnect.umd.js"],
+	"exclude": ["node_modules"],
+}

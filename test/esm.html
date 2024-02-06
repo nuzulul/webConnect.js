@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+</head>
+
+<body>
+	<script type="module">
+	import {Webconnect} from './../public/bundle/webconnect.ems.js'
+		void async function main() {
+				let peers = []
+				const w = Webconnect.init({})
+				w.onConnect(async(data)=>{
+					console.log(data)
+					w.Send("halo",{connectId:data.connectId})
+					console.log(await w.ping({connectId:data.connectId}))
+					w.getConnection((data)=>{
+					console.log(data)
+					})
+				})
+				w.onDisconnect((connectId)=>{
+					console.log(connectId)
+					w.Disconnect()
+				})
+				
+				w.onReceive((data,connectId) =>{
+					console.log(data)
+				})
+		}()
+	</script>
+
+</body>
+
+</html>

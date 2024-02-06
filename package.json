@@ -1,0 +1,74 @@
+{
+  "name": "webconnect",
+  "version": "0.0.1",
+  "description": "📶 Browser to browser connection without server",
+  "main": "dist/umd/webconnect.umd.js",
+  "module": "dist/esm/webconnect.esm.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/webconnect.esm.js",
+      "require": "./dist/umd/webconnect.umd.js"
+    }
+  },
+  "scripts": {
+    "start": "npm run dev-node",
+	
+    "build-dev-cjs": "tsc -p tsconfig-devcjs.json",
+    "build-dev-esm": "tsc -p tsconfig-devesm.json",
+    "dev-browser": "nodemon -e js,ts --watch src --watch test --exec \"tsc -p tsconfig-rollup.json && rollup -c public/config/rollup.config.dev.js && tsc -p tsconfig-dts.json&& node test/server-browser.js\"",
+    "dev": "npm run dev-browser",
+	
+    "removedir": "node -e \"var fs = require('fs'); try{process.argv.slice(1).map((fpath) => fs.rmdirSync(fpath, { recursive: true }))}catch(err){console.log(`Dist not found`)}; process.exit(0);\"",
+    "build-all": "tsc -p tsconfig-rollup.json && rollup -c public/config/rollup.config.build.js && echo {\"type\": \"commonjs\"}>dist\\umd\\package.json && echo {\"type\": \"module\"}>dist\\esm\\package.json",
+    "build-types":"tsc -p tsconfig-rollup.json && rollup -c public/config/rollup.config.buildtypes.js && tsc -p tsconfig-esm.json && tsc -p tsconfig-umd.json",
+	"build": "npm run removedir dist && npm run build-all && npm run build-types",
+	
+    "backup": "node -e \"var fs = require('fs'); try{fs.copyFileSync('package.json', 'package-backup.json')}catch(err){console.log(`Copy failed`)}; process.exit(0);\"",
+    "restore": "node -e \"var fs = require('fs'); try{fs.copyFileSync('package-backup.json', 'package.json')}catch(err){console.log(`Copy failed`)}; process.exit(0);\"",
+    "prepublishOnly": "npm run backup && npm pkg delete devDependencies && npm pkg delete dependencies",
+    "postpublish": "npm run restore",
+	
+    "test-all": "nodemon -e js,ts --watch src --watch test --exec \"npm run build-dev-cjs && node public/cjs/test/test-all.js\"",
+    "test": "npm run test-all"
+  },
+  "files": [
+    "dist/",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nuzulul/webconnect.js.git"
+  },
+  "keywords": [
+	"webconnect",
+	"browser-to-browser",
+	"p2p",
+	"ipfs",
+	"webtorrent",
+	"mqtt",
+	"web-peer",
+	"web-connect",
+	"browser-connectivity",
+	"distributed-web",
+	"distributed",
+	"decentralized"
+  ],
+  "author": "Nuzulul Zulkarnain",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nuzulul/webconnect.js/issues"
+  },
+  "homepage": "https://github.com/nuzulul/webconnect.js#readme",
+  "dependencies": {
+    "trystero": "^0.17.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "nodemon": "^3.0.3",
+    "rollup": "^4.9.6",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  }
+}
