@@ -10,10 +10,10 @@
 
 <body>
 	<script type="module">
-	import {Webconnect} from './../public/bundle/webconnect.ems.js'
+	import {Webconnect} from './../public/bundle/webConnect.ems.js'
 		void async function main() {
 				let peers = []
-				const w = Webconnect.init({})
+				const w = webConnect.init({})
 				w.onConnect(async(data)=>{
 					console.log(data)
 					w.Send("halo",{connectId:data.connectId})

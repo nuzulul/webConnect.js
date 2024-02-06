@@ -2,7 +2,7 @@ import * as joinRoomTORRENT from 'trystero'
 import * as joinRoomIPFS from 'trystero/ipfs'
 import * as joinRoomMQTT from 'trystero/mqtt'
 
-export class Webconnect{
+export class webConnect{
 	
 	connectpeers
 	DB
@@ -393,7 +393,7 @@ export class Webconnect{
 			roomMQTT
 		},selfid:{torrent:joinRoomTORRENT.selfId,mqtt:joinRoomMQTT.selfId,ipfs:joinRoomMQTT.selfId}}
 
-		return new Webconnect(connect)
+		return new webConnect(connect)
 	}
 	
 }

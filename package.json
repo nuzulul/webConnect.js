@@ -2,20 +2,21 @@
   "name": "webconnect",
   "version": "0.0.1",
   "description": "📶 Browser to browser connection without server",
-  "main": "dist/umd/webconnect.umd.js",
-  "module": "dist/esm/webconnect.esm.js",
+  "main": "dist/umd/webConnect.umd.js",
+  "module": "dist/esm/webConnect.esm.js",
   "exports": {
     ".": {
-      "import": "./dist/esm/webconnect.esm.js",
-      "require": "./dist/umd/webconnect.umd.js"
+      "import": "./dist/esm/webConnect.esm.js",
+      "require": "./dist/umd/webConnect.umd.js"
     }
   },
   "scripts": {
     "start": "npm run dev-node",
 	
-    "build-dev-cjs": "tsc -p tsconfig-devcjs.json",
+    "pre-dev":"npm install --include dev",
+	"build-dev-cjs": "tsc -p tsconfig-devcjs.json",
     "build-dev-esm": "tsc -p tsconfig-devesm.json",
-    "dev-browser": "nodemon -e js,ts --watch src --watch test --exec \"tsc -p tsconfig-rollup.json && rollup -c public/config/rollup.config.dev.js && tsc -p tsconfig-dts.json&& node test/server-browser.js\"",
+    "dev-browser": "nodemon -e js,ts --watch src --watch test --exec \"tsc -p tsconfig-rollup.json && rollup -c public/config/rollup.config.dev.js && node test/server-browser.js\"",
     "dev": "npm run dev-browser",
 	
     "removedir": "node -e \"var fs = require('fs'); try{process.argv.slice(1).map((fpath) => fs.rmdirSync(fpath, { recursive: true }))}catch(err){console.log(`Dist not found`)}; process.exit(0);\"",
@@ -37,7 +38,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nuzulul/webconnect.js.git"
+    "url": "git+https://github.com/nuzulul/webConnect.js.git"
   },
   "keywords": [
 	"webconnect",
@@ -56,9 +57,9 @@
   "author": "Nuzulul Zulkarnain",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nuzulul/webconnect.js/issues"
+    "url": "https://github.com/nuzulul/webConnect.js/issues"
   },
-  "homepage": "https://github.com/nuzulul/webconnect.js#readme",
+  "homepage": "https://github.com/nuzulul/webConnect.js#readme",
   "dependencies": {
     "trystero": "^0.17.0"
   },

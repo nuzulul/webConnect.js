@@ -7,6 +7,6 @@
 		"emitDeclarationOnly": true,
 		"rootDir": "./public/umd"
     },
-	"include": ["public/umd/webconnect.umd.js"],
+	"include": ["public/umd/webConnect.umd.js"],
 	"exclude": ["node_modules"],
 }

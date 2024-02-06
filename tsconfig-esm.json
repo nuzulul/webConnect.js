@@ -7,6 +7,6 @@
 		"emitDeclarationOnly": true,
 		"rootDir": "./public/esm"
     },
-	"include": ["public/esm/webconnect.esm.js"],
+	"include": ["public/esm/webConnect.esm.js"],
 	"exclude": ["node_modules"],
 }
