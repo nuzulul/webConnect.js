@@ -71,7 +71,7 @@ connect.Send(buffer,attribute)
 ```
 Open Streaming
 ```javascript
-const attribute = {connectId}
+const attribute = {connectId,metadata:{name:"Daily Meeting"}}
 connect.openStreaming(stream,attribute)
 ```
 Close Streaming
@@ -188,16 +188,24 @@ onReceiveProgress((attribute) => {})
 ```javascript
 openStreaming(stream,attribute)
 ```
-- `stream = MediaStream` = A `MediaStream` with audio and/or video 
-- `attribute = {connectId}` - `connectId` is target connection
+- `stream = MediaStream` - A `MediaStream` with audio and/or video 
+- `attribute = {connectId, metadata}` - `connectId` is target connection - `metadata` is optional object stream description
 
 ### Listen to incoming streaming connection
 
 ```javascript
 onStreaming((stream,attribute) => {})
 ```
-- `stream` = A `MediaStream` with audio and/or video 
-- `attribute = {connectId}` - `connectId` is origin connection identity
+- `stream = MediaStream` - A `MediaStream` with audio and/or video 
+- `attribute = {connectId,metadata}` - `connectId` is origin connection identity - `metadata` is optional stream description
+
+### Close streaming connection
+
+```javascript
+closeStreaming(stream,attribute)
+```
+- `stream = MediaStream` - A previously opened MediaStream
+- `attribute = {connectId}` - `connectId` is target connection
 
 ### Get self connection identity
 

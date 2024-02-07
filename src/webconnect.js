@@ -38,9 +38,9 @@ class webConnect{
 		ipfs.onPeerLeave((peerId)=>{this.#onconnectPeerLeave(peerId, "ipfs",this.#onLeave);})
 		mqtt.onPeerLeave((peerId)=>{this.#onconnectPeerLeave(peerId, "mqtt",this.#onLeave);})
 
-		torrent.onPeerStream((stream,peerId)=>{this.#onconnectPeerStream(stream,peerId, "mqtt",this.#onStream);})
-		ipfs.onPeerStream((stream,peerId)=>{this.#onconnectPeerStream(stream,peerId, "mqtt",this.#onStream);})
-		mqtt.onPeerStream((stream,peerId)=>{this.#onconnectPeerStream(setream,peerId, "mqtt",this.#onStream);})
+		torrent.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(stream,peerId,metadata, "torrent",this.#onStream);})
+		ipfs.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(stream,peerId,metadata, "ipfs",this.#onStream);})
+		mqtt.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(setream,peerId,metadata, "mqtt",this.#onStream);})
 		
 		const [torrentsendData, torrentgetData, torrentonDataProgress] = torrent.makeAction('data')
 		this.#torrentsendData = torrentsendData
@@ -91,8 +91,8 @@ class webConnect{
 		}
 	}
 	
-	#onconnectPeerStream(stream,peerId,protocol,callback){
-		let connectoutput = {connectId:peerId}
+	#onconnectPeerStream(stream,peerId,metadata,protocol,callback){
+		let connectoutput = {connectId:peerId,metadata}
 		callback(stream,connectoutput)
 	}
 	
@@ -226,8 +226,8 @@ class webConnect{
 	#onLeave = () => {}	
 	onDisconnect = f => (this.#onLeave = f)
 	
-	Send(data,metadata){
-		this.#fsendData("",data,metadata.connectId,metadata.metadata)
+	Send(data,attribute){
+		this.#fsendData("",data,attribute.connectId,attribute.metadata)
 	}
 	
 	#onGet = () => {}
@@ -239,19 +239,20 @@ class webConnect{
 	#ReceiveProgress = () => {}
 	onReceiveProgress = f => (this.#ReceiveProgress = f)
 	
-	openStreaming(stream,metadata){
-		let peerId = metadata.connectId
+	openStreaming(stream,attribute){
+		let peerId = attribute.connectId
+		let metadata = attribute.metadata
 		if(peerId == null){
 			this.#connectpeers.forEach((peer,index)=>{
 				let engine = peer.engine
 				if(engine.includes("torrent")){
-					this.#TORRENT.addStream(stream, peer.id)
+					this.#TORRENT.addStream(stream, peer.id, metadata)
 				}
 				else if (engine.includes("mqtt")){
-					this.#MQTT.addStream(stream, peer.id)
+					this.#MQTT.addStream(stream, peer.id, metadata)
 				}
 				else if (engine.includes("ipfs")){
-					this.#IPFS.addStream(stream, peer.id)
+					this.#IPFS.addStream(stream, peer.id, metadata)
 				}
 			})
 		}else{
@@ -259,13 +260,13 @@ class webConnect{
 			if(searchPeer > -1){
 				let engine = this.#connectpeers[searchPeer].engine
 				if(engine.includes("torrent")){
-					this.#TORRENT.addStream(stream, peerId)
+					this.#TORRENT.addStream(stream, peerId, metadata)
 				}
 				else if (engine.includes("mqtt")){
-					this.#MQTT.addStream(stream, peerId)
+					this.#MQTT.addStream(stream, peerId, metadata)
 				}
 				else if (engine.includes("ipfs")){
-					this.#IPFS.addStream(stream, peerId)
+					this.#IPFS.addStream(stream, peerId, metadata)
 				}
 			}
 		}
@@ -274,8 +275,8 @@ class webConnect{
 	#onStream = () => {}
 	onStreaming = f => (this.#onStream = f)
 	
-	closeStreaming(stream,metadata){
-		let peerId = metadata.connectId
+	closeStreaming(stream,attribute){
+		let peerId = attribute.connectId
 		if(peerId == null){
 			this.#connectpeers.forEach((peer,index)=>{
 				let engine = peer.engine
@@ -302,8 +303,8 @@ class webConnect{
 		}
 	}
 	
-	async Ping(metadata){
-		let peerId = metadata.connectId
+	async Ping(attribute){
+		let peerId = attribute.connectId
 		if(peerId == null){
 			return null
 		}else if(typeof peerId === 'string'){
