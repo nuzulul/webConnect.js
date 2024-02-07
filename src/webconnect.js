@@ -22,12 +22,13 @@ class webConnect{
 		const torrent = connect.room.roomTORRENT
 		const ipfs = connect.room.roomIPFS
 		const mqtt = connect.room.roomMQTT
+		const MyId = connect.MyId
 		
 		this.#DB = db
 		this.#TORRENT = torrent
 		this.#MQTT = mqtt
 		this.#IPFS = ipfs
-		this.MyId = connect.MyId
+		this.MyId = MyId
 		
 		torrent.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "torrent",this.#onJoin);})
 		ipfs.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "ipfs",this.#onJoin);})
@@ -273,8 +274,8 @@ class webConnect{
 	#onStream = () => {}
 	onStreaming = f => (this.#onStream = f)
 	
-	closeStreaming(stream,options){
-		let peerId = options.connectId
+	closeStreaming(stream,metadata){
+		let peerId = metadata.connectId
 		if(peerId == null){
 			this.#connectpeers.forEach((peer,index)=>{
 				let engine = peer.engine
