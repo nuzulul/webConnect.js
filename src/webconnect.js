@@ -226,8 +226,8 @@ class webConnect{
 	#onLeave = () => {}	
 	onDisconnect = f => (this.#onLeave = f)
 	
-	Send(data,options){
-		this.#fsendData("",data,options.connectId,options.metadata)
+	Send(data,metadata){
+		this.#fsendData("",data,metadata.connectId,metadata.metadata)
 	}
 	
 	#onGet = () => {}
@@ -239,8 +239,8 @@ class webConnect{
 	#ReceiveProgress = () => {}
 	onReceiveProgress = f => (this.#ReceiveProgress = f)
 	
-	openStreaming(stream,options){
-		let peerId = options.connectId
+	openStreaming(stream,metadata){
+		let peerId = metadata.connectId
 		if(peerId == null){
 			this.#connectpeers.forEach((peer,index)=>{
 				let engine = peer.engine
