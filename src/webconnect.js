@@ -12,7 +12,7 @@ export class webConnect{
 	#torrentsendData
 	#ipfssendData
 	#mqttsendData
-	
+	selfId
 	
 	constructor(connect){
 		
@@ -27,6 +27,7 @@ export class webConnect{
 		this.#TORRENT = torrent
 		this.#MQTT = mqtt
 		this.#IPFS = ipfs
+		this.selfId = connect.selfId
 		
 		torrent.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "torrent",this.#onJoin);})
 		ipfs.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "ipfs",this.#onJoin);})
@@ -386,13 +387,15 @@ export class webConnect{
 		
 		const roomMQTT = joinRoomMQTT.joinRoom(config, roomName)
 
-		const db = false		
+		const db = false
+
+		const selfId = joinRoomTORRENT.selfId || joinRoomMQTT.selfId || joinRoomMQTT.selfId
 		
 		const connect = {db:db,room:{
 			roomTORRENT,
 			roomIPFS,
 			roomMQTT
-		},selfid:{torrent:joinRoomTORRENT.selfId,mqtt:joinRoomMQTT.selfId,ipfs:joinRoomMQTT.selfId}}
+		},selfId}
 
 		return new webConnect(connect)
 	}
