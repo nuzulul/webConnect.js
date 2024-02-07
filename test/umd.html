@@ -18,7 +18,7 @@
 				w.onConnect(async(data)=>{
 					console.log(data)
 					w.Send("halo",{connectId:data.connectId})
-					console.log(await w.ping({connectId:data.connectId}))
+					console.log(await w.Ping({connectId:data.connectId}))
 					w.getConnection((data)=>{
 					console.log(data)
 					})

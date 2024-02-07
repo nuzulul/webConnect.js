@@ -11,7 +11,7 @@ export default [
       name: 'webconnect',
     },
     {
-      file: 'public/bundle/webConnect.ems.js',
+      file: 'public/bundle/webConnect.esm.js',
       format: 'es',
     },
   ],
