@@ -56,7 +56,7 @@ class webConnect{
 		mqttgetData((data, peerId, metadata) => this.#fgetData(data, peerId, metadata, "mqtt",this.#onGet))
 		mqttonDataProgress((percent, peerId, metadata) => {this.#onconnectReceiveProggress(percent, peerId, metadata,"ipfs",this.#ReceiveProgress)})
 		
-		this.#loopping()
+		//this.#loopping()
 		
 	}
 	
@@ -71,7 +71,7 @@ class webConnect{
 			let engine = this.#connectpeers[searchPeer].engine
 			if(!engine.includes(protocol))this.#connectpeers[searchPeer].engine.push(protocol)
 		}
-		this.#fping(peerId,protocol)
+		//this.#fping(peerId,protocol)
 	}
 	
 	#onconnectPeerLeave(peerId, protocol,callback){
