@@ -2,7 +2,7 @@ import * as joinRoomTORRENT from 'trystero'
 import * as joinRoomIPFS from 'trystero/ipfs'
 import * as joinRoomMQTT from 'trystero/mqtt'
 
-export class webConnect{
+class webConnect{
 	
 	#connectpeers
 	#DB
@@ -12,7 +12,7 @@ export class webConnect{
 	#torrentsendData
 	#ipfssendData
 	#mqttsendData
-	selfId
+	MyId
 	
 	constructor(connect){
 		
@@ -27,7 +27,7 @@ export class webConnect{
 		this.#TORRENT = torrent
 		this.#MQTT = mqtt
 		this.#IPFS = ipfs
-		this.selfId = connect.selfId
+		this.MyId = connect.MyId
 		
 		torrent.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "torrent",this.#onJoin);})
 		ipfs.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "ipfs",this.#onJoin);})
@@ -106,18 +106,18 @@ export class webConnect{
 			}
 		}else{
 			if(arrpeers != null&&Array.isArray(arrpeers)){
-				for(const[id] of arrpeers){
+				for(const id of arrpeers){
 					const searchPeer = this.#connectpeers.findIndex((peer) => peer.id==id)
 					if(searchPeer > -1){
 						let engine = this.#connectpeers[searchPeer].engine
 						if(engine.includes("torrent")){
-							this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "torrent",this.#SendProgress);})
+							this.#torrentsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "torrent",this.#SendProgress);})
 						}
 						else if (engine.includes("mqtt")){
-							this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
+							this.#mqttsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
 						}
 						else if (engine.includes("ipfs")){
-							this.#ipfssendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "ipfs",this.#SendProgress);})
+							this.#ipfssendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "ipfs",this.#SendProgress);})
 						}
 					}
 					
@@ -147,13 +147,13 @@ export class webConnect{
 					this.#connectpeers.forEach((peer,index)=>{
 						let engine = peer.engine
 						if(engine.includes("torrent")){
-							this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "torrent",this.#SendProgress);})
+							this.#torrentsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "torrent",this.#SendProgress);})
 						}
 						else if (engine.includes("mqtt")){
-							this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
+							this.#mqttsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
 						}
 						else if (engine.includes("ipfs")){
-							this.#ipfssendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "ipfs",this.#SendProgress);})
+							this.#ipfssendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "ipfs",this.#SendProgress);})
 						}
 					})
 				}
@@ -168,7 +168,7 @@ export class webConnect{
 	
 	#onconnectReceiveProggress(percent, peerId, metadata,protocol,callback){
 		let connectoutput = {percent,connectId:peerId,metadata}
-		callback(percent, connectoutput)
+		callback(connectoutput)
 	}
 	
 	#fgetData(data, peerId, metadata,protocol,callback){
@@ -301,8 +301,8 @@ export class webConnect{
 		}
 	}
 	
-	async Ping(options){
-		let peerId = options.connectId
+	async Ping(metadata){
+		let peerId = metadata.connectId
 		if(peerId == null){
 			return null
 		}else if(typeof peerId === 'string'){
@@ -341,63 +341,65 @@ export class webConnect{
 		f(output)
 	}
 	
-	static init({
-				appName = "webConnect",
-				roomName = "webConnectRoom",
-				connectPassword = "Browser to browser connection without server",
-				iceConfiguration = {
-					iceServers: [
-						{
-							urls: 'turn:numb.viagenie.ca',
-							credential: 'myturn33',
-							username: 'hxuwb10o@anonaddy.me',
-						},
-						{
-							urls: "stun:stun.relay.metered.ca:80",
-						},
-						{
-							urls: "turn:standard.relay.metered.ca:80",
-							username: "ffe6b198c8c1b398859ab8f8",
-							credential: "ijdB5Sq20DElg7CF",
-						},
-						{
-							urls: "turn:standard.relay.metered.ca:80?transport=tcp",
-							username: "ffe6b198c8c1b398859ab8f8",
-							credential: "ijdB5Sq20DElg7CF",
-						},
-						{
-							urls: "turn:standard.relay.metered.ca:443",
-							username: "ffe6b198c8c1b398859ab8f8",
-							credential: "ijdB5Sq20DElg7CF",
-						},
-						{
-							urls: "turns:standard.relay.metered.ca:443?transport=tcp",
-							username: "ffe6b198c8c1b398859ab8f8",
-							credential: "ijdB5Sq20DElg7CF",
-						},
-				  ]
-				}
-	}){
-
-		const config = {appId: appName,password:connectPassword,rtcConfig:iceConfiguration}
-		
-		const roomTORRENT = joinRoomTORRENT.joinRoom(config, roomName)
-		
-		const roomIPFS = joinRoomIPFS.joinRoom(config, roomName)
-		
-		const roomMQTT = joinRoomMQTT.joinRoom(config, roomName)
-
-		const db = false
-
-		const selfId = joinRoomTORRENT.selfId || joinRoomMQTT.selfId || joinRoomMQTT.selfId
-		
-		const connect = {db:db,room:{
-			roomTORRENT,
-			roomIPFS,
-			roomMQTT
-		},selfId}
-
-		return new webConnect(connect)
-	}
-	
 }
+
+export function webconnect({
+			appName = "webConnect",
+			channelName = "webConnectChannel",
+			connectPassword = "Browser to browser connection without server",
+			iceConfiguration = {
+				iceServers: [
+					{
+						urls: 'turn:numb.viagenie.ca',
+						credential: 'myturn33',
+						username: 'hxuwb10o@anonaddy.me',
+					},
+					{
+						urls: "stun:stun.relay.metered.ca:80",
+					},
+					{
+						urls: "turn:standard.relay.metered.ca:80",
+						username: "ffe6b198c8c1b398859ab8f8",
+						credential: "ijdB5Sq20DElg7CF",
+					},
+					{
+						urls: "turn:standard.relay.metered.ca:80?transport=tcp",
+						username: "ffe6b198c8c1b398859ab8f8",
+						credential: "ijdB5Sq20DElg7CF",
+					},
+					{
+						urls: "turn:standard.relay.metered.ca:443",
+						username: "ffe6b198c8c1b398859ab8f8",
+						credential: "ijdB5Sq20DElg7CF",
+					},
+					{
+						urls: "turns:standard.relay.metered.ca:443?transport=tcp",
+						username: "ffe6b198c8c1b398859ab8f8",
+						credential: "ijdB5Sq20DElg7CF",
+					},
+			  ]
+			}
+}){
+
+	const config = {appId: appName,password:connectPassword,rtcConfig:iceConfiguration}
+	
+	const roomTORRENT = joinRoomTORRENT.joinRoom(config, channelName)
+	
+	const roomIPFS = joinRoomIPFS.joinRoom(config, channelName)
+	
+	const roomMQTT = joinRoomMQTT.joinRoom(config, channelName)
+
+	const db = false
+
+	const MyId = joinRoomTORRENT.selfId || joinRoomMQTT.selfId || joinRoomMQTT.selfId
+	
+	const connect = {db:db,room:{
+		roomTORRENT,
+		roomIPFS,
+		roomMQTT
+	},MyId}
+
+	return new webConnect(connect)
+}
+
+export default webconnect

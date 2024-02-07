@@ -3,17 +3,23 @@ import commonjs from '@rollup/plugin-commonjs';
 
 export default [
 {
-  input: 'src/webConnect.js',
+  input: 'src/webconnect.js',
   output: [
     {
-      file: 'dist/umd/webConnect.umd.js',
+      file: 'dist/esm/webconnect.js',
+      format: 'es',
+    }
+  ],
+  plugins: [nodeResolve({browser: true}), commonjs()]
+},
+{
+  input: 'src/umd.js',
+  output: [
+    {
+      file: 'dist/umd/webconnect.js',
       format: 'umd',
       name: 'webconnect',
-    },
-    {
-      file: 'dist/esm/webConnect.esm.js',
-      format: 'es',
-    },
+    }
   ],
   plugins: [nodeResolve({browser: true}), commonjs()]
 }

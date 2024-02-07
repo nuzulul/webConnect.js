@@ -10,17 +10,16 @@
 <div id="data"></div>
 <body>
 
-	<script src="./../public/bundle/webConnect.umd.js"></script>
+	<script src="./../public/bundle/webconnect.umd.js"></script>
 	<script>
 		void async function main() {
-				let peers = []
-				const w = webconnect.webConnect.init({})
+				const w = webconnect({})
 				w.onConnect(async(data)=>{
 					console.log(data)
-					w.Send("halo",{connectId:data.connectId})
+					w.Send("hello",{connectId:data.connectId})
 					console.log(await w.Ping({connectId:data.connectId}))
 					w.getConnection((data)=>{
-					console.log(data)
+						console.log(data)
 					})
 				})
 				w.onDisconnect((connectId)=>{

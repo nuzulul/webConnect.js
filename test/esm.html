@@ -10,25 +10,24 @@
 
 <body>
 	<script type="module">
-	import {webConnect} from './../public/bundle/webConnect.ems.js'
+	import webconnect from './../public/bundle/webconnect.esm.js'
 		void async function main() {
-				let peers = []
-				const w = webConnect.init({})
+				const w = webconnect({})
 				w.onConnect(async(data)=>{
 					console.log(data)
-					w.Send("halo",{connectId:data.connectId})
-					console.log(await w.ping({connectId:data.connectId}))
+					w.Send("hello",{connectId:data.connectId})
+					console.log(await w.Ping({connectId:data.connectId}))
 					w.getConnection((data)=>{
-					console.log(data)
+						console.log(data)
 					})
 				})
-				w.onDisconnect((connectId)=>{
-					console.log(connectId)
+				w.onDisconnect((data)=>{
+					console.log(data)
 					w.Disconnect()
 				})
 				
-				w.onReceive((data,connectId) =>{
-					console.log(data)
+				w.onReceive((data,metadata) =>{
+					console.log(data,metadata)
 				})
 		}()
 	</script>
