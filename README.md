@@ -1,6 +1,9 @@
 # webConnect.js
 📶 Browser to browser connection without server
 
+[![NPM](https://nodei.co/npm/webconnect.png?mini=true)](https://www.npmjs.com/package/webconnect)
+[![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
+
 ## Installation
 
 NPM
@@ -15,10 +18,10 @@ import webconnect from 'webconnect'
 ```
 CDN
 ```javascript
-<script src="https://cdn.jsdelivr.net/npm/webconnect@0.0.1/dist/umd/webconnect.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/webconnect@0.0.2/dist/umd/webconnect.js"></script>
 ```
 ```javascript
-<script type="module">import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.1/+esm'</script>
+<script type="module">import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.2/dist/esm/webconnect.js'</script>
 ```
 ## Get Started
 ### Initialization
@@ -63,7 +66,7 @@ console.log(`MyId : ${connect.MyId}`)
 ```
 Send Data
 ```javascript
-connect.Send("data",{connectId})
+connect.Send('data',{connectId})
 ```
 Send Binary
 ```javascript
@@ -71,7 +74,7 @@ connect.Send(ArrayBuffer,{connectId,metadata:{name: 'Report', type: 'application
 ```
 Open Streaming
 ```javascript
-connect.openStreaming(stream,{connectId,metadata:{name:"Meeting"}})
+connect.openStreaming(stream,{connectId,metadata:{name:'Meeting'}})
 ```
 Close Streaming
 ```javascript
@@ -88,6 +91,29 @@ connect.Disconnect()
 Get All Connection Id
 ```javascript
 connect.getConnection(data => console.log(`${data}`))
+```
+## Example
+```javascript
+<script type="module">
+	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.2/dist/esm/webconnect.js'
+	
+	const connect = webconnect({})
+	connect.onConnect(async(data)=>{
+		console.log(data)
+		connect.Send("hello",{connectId:data.connectId})
+		console.log(await connect.Ping({connectId:data.connectId}))
+		connect.getConnection((data)=>{
+			console.log(data)
+		})
+	})
+	connect.onDisconnect((data)=>{
+		console.log(data)
+	})
+	
+	connect.onReceive((data,metadata) =>{
+		console.log(data,metadata)
+	})
+</script>
 ```
 ## License
 

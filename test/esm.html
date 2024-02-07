@@ -11,7 +11,7 @@
 <body>
 	<script type="module">
 	import webconnect from './../public/bundle/webconnect.esm.js'
-		void async function main() {
+		//void async function main() {
 				const w = webconnect({})
 				w.onConnect(async(data)=>{
 					console.log(data)
@@ -29,7 +29,7 @@
 				w.onReceive((data,metadata) =>{
 					console.log(data,metadata)
 				})
-		}()
+		//}()
 	</script>
 
 </body>
