@@ -112,46 +112,58 @@ connect.getConnection((data) => console.log(`${data}`))
 	})
 </script>
 ```
+
 ## API
+
+### Connect to a channel
+
 ```javascript
 webconnect({appName,channelName,connectPassword,iceConfiguration})
 ```
-Connect to a channel with following options :
+options :
 - appName - (String) Your app identity
 - channelName - (String) Channel to connect
 - connectPassword - (String) Password to encrypt connection pairing
 - iceConfiguration - (Object) Custom [iceConfiguration](https://webrtc.org/getting-started/turn-server)
 
+### Listen to every new connection
+
 ```javascript
 onConnect((metadata)=>{})
 ```
-Listen to every new connection. 
 - `metadata = {connectId}` - `connectId` is connection identity
+
+### Listen to every disconnection
 
 ```javascript
 onDisconnect((metadata)=>{})
 ```
-Listen to every disconnection. 
 - `metadata = {connectId}` - `connectId` is connection identity
+
+### Send data to connection 
 
 ```javascript
 Send(data,metadata)
 ```
-Send data to connection 
 - `data = String or Object`
 - `metadata = {connectId}` - `connectId` is target connection can single `connectId` , multiple with array `[connectId,connectId,...]` or `null` to all connection in channel 
+
+### Send binary data to connection
 
 ```javascript
 Send(ArrayBuffer,metadata)
 ```
-Send binary to connection
 - `ArrayBuffer = Binary data`
 - `metadata = {connectId}` - `connectId` is target connection can single `connectId` , multiple with array `[connectId,connectId,...]` or `null` to all connection in channel
+
+### Listen to sending progress for binary data
 
 ```javascript
 onSendProgress((metadata) => {})
 ```
 - `metadata = {percent,connectId}` - `percent` indicating the percentage between 0 and 1, `connectId` is target connection
+
+### Listen to receiving data
 
 ```javascript
 onReceive((data,metadata) => {})
@@ -159,10 +171,14 @@ onReceive((data,metadata) => {})
 - `data = String or Object`
 - `metadata = {connectId}` - `connectId` is connection identity
 
+### Listen to receiving progress for binary data
+
 ```javascript
 onReceiveProgress((metadata) => {})
 ```
 - `metadata = {percent,connectId}` - `percent` indicating the percentage between 0 and 1, `connectId` is connection identity
+
+### Open streaming connection
 
 ```javascript
 openStreaming(stream,metadata)
@@ -170,29 +186,40 @@ openStreaming(stream,metadata)
 - `stream` = A `MediaStream` with audio and/or video 
 - `metadata = {connectId}` - `connectId` is target connection
 
+### Listen to incoming streaming connection
+
 ```javascript
 onStreaming((stream,metadata) => {})
 ```
 - `stream` = A `MediaStream` with audio and/or video 
 - `metadata = {connectId}` - `connectId` is connection identity
+
+### Get self connection identity
+
 ```javascript
 getMyId()
 ```
-Get self connection identity
+
+### Get all connection identity in the channel
+
 ```javascript
 getConnection((metadata) => {})
 ```
-Get all connection identity in the channel
 - `metadata = {connection}` - `connection` is Array of all connection identity
+
+### Get latency of connection which return a promise that resolve to milliseconds
+
 ```javascript
 Ping(metadata)
 ```
-Get latency of connection which return a promise that resolve to milliseconds
 - `metadata = {connectId}` - `connectId` is target connection
+
+### Disconnect from channel
+
 ```javascript
 Disconnect()
 ```
-Disconnect from channel
+
 
 ## License
 
