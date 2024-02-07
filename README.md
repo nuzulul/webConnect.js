@@ -32,52 +32,57 @@ const connect = await webconnect({})
 ### Listen
 Listen on new connect
 ```javascript
-connect.onConnect((metadata) => console.log(`${metadata.connectId} connected`))
+connect.onConnect((attribute) => console.log(`${attribute.connectId} connected`))
 ```
 Listen on disconnect event
 ```javascript
-connect.onDisconnect((metadata) => console.log(`${metadata.connectId} disconnected`))
+connect.onDisconnect((attribute) => console.log(`${attribute.connectId} disconnected`))
 ```
 Listen on receiving data
 ```javascript
-connect.onReceive((data,metadata) => console.log(`${data} from ${metadata}`))
+connect.onReceive((data,attribute) => console.log(`${data} from ${attribute.connectId}`))
 ```
 Listen on sending progress
 ```javascript
-connect.onSendProgress((metadata) => console.log(`Sending progress : ${metadata}`))
+connect.onSendProgress((attribute) => console.log(`Sending progress : ${attribute.percent} from ${attribute.connectId}`))
 ```
 Listen on receiving progress
 ```javascript
-connect.onReceiveProgress((metadata) => console.log(`Receiving progress : ${metadata}`))
+connect.onReceiveProgress((attribute) => console.log(`Receiving progress : ${attribute.percent} from ${attribute.connectId}`))
 ```
 Listen on incoming streaming
 ```javascript
-connect.onStreaming((stream,metadata) => video.srcObject = stream )
+connect.onStreaming((stream,attribute) => Elements[attribute.connectId].video.srcObject = stream )
 ```
 ### Action
 Get My Connection Id
 ```javascript
-connect.getMyId((metadata) => console.log(`${metadata}`))
+connect.getMyId((attribute) => console.log(`${attribute.connectId}`))
 ```
 Send Data
 ```javascript
-connect.Send('data',{connectId})
+const attribute = {connectId}
+connect.Send(data,attribute)
 ```
 Send Binary
 ```javascript
-connect.Send(ArrayBuffer,{connectId,metadata:{name: 'Report', type: 'application/pdf'}})
+const attribute = {connectId,metadata:{name: 'Report', type: 'application/pdf'}}
+connect.Send(buffer,attribute)
 ```
 Open Streaming
 ```javascript
-connect.openStreaming(stream,{connectId})
+const attribute = {connectId}
+connect.openStreaming(stream,attribute)
 ```
 Close Streaming
 ```javascript
-connect.closeStreaming(stream,{connectId})
+const attribute = {connectId}
+connect.closeStreaming(stream,attribute)
 ```
 Ping Connection
 ```javascript
-console.log(`${await connect.Ping({connectId})} ms`)
+const attribute = {connectId}
+console.log(`${await connect.Ping(attribute)} ms`)
 ```
 Disconnect
 ```javascript
@@ -85,7 +90,7 @@ connect.Disconnect()
 ```
 Get All Connection Id
 ```javascript
-connect.getConnection((metadata) => console.log(`${metadata}`))
+connect.getConnection((attribute) => console.log(`${attribute.connection}`))
 ```
 ## Example
 ```javascript
@@ -95,20 +100,20 @@ connect.getConnection((metadata) => console.log(`${metadata}`))
 	const connect = webconnect({
 		appName:"myApp"
 	})
-	connect.onConnect(async(data)=>{
-		console.log(data)
-		connect.Send("hello",{connectId:data.connectId})
-		console.log(await connect.Ping({connectId:data.connectId}))
-		connect.getConnection((data)=>{
-			console.log(data)
+	connect.onConnect(async(attribute)=>{
+		console.log(attribute)
+		connect.Send("hello",{connectId:attribute.connectId})
+		console.log(await connect.Ping({connectId:attribute.connectId}))
+		connect.getConnection((attribute)=>{
+			console.log(attribute.connection)
 		})
 	})
-	connect.onDisconnect((data)=>{
-		console.log(data)
+	connect.onDisconnect((attribute)=>{
+		console.log(attribute)
 	})
 	
-	connect.onReceive((data,metadata) =>{
-		console.log(data,metadata)
+	connect.onReceive((data,attribute) =>{
+		console.log(data,attribute)
 	})
 </script>
 ```
@@ -123,96 +128,96 @@ webconnect({appName,channelName,connectPassword,iceConfiguration})
 options :
 - appName - (String) Your app identity
 - channelName - (String) Channel to connect
-- connectPassword - (String) Password to encrypt connection pairing
+- connectPassword - (String) Password to encrypt connection initialization
 - iceConfiguration - (Object) Custom [iceConfiguration](https://webrtc.org/getting-started/turn-server)
 
 ### Listen to every new connection
 
 ```javascript
-onConnect((metadata)=>{})
+onConnect((attribute)=>{})
 ```
-- `metadata = {connectId}` - `connectId` is connection identity
+- `attribute = {connectId}` - `connectId` is origin connection identity
 
 ### Listen to every disconnection
 
 ```javascript
-onDisconnect((metadata)=>{})
+onDisconnect((attribute)=>{})
 ```
-- `metadata = {connectId}` - `connectId` is connection identity
+- `attribute = {connectId}` - `connectId` is origin connection identity
 
 ### Send data to connection 
 
 ```javascript
-Send(data,metadata)
+Send(data,attribute)
 ```
 - `data = String or Object`
-- `metadata = {connectId}` - `connectId` is target connection can single `connectId` , multiple with array `[connectId,connectId,...]` or `null` to all connection in channel 
+- `attribute = {connectId}` - `connectId` is target connection can single `connectId` , multiple with array `[connectId,connectId,...]` or `null` to target all connection in the channel 
 
 ### Send binary data to connection
 
 ```javascript
-Send(ArrayBuffer,metadata)
+Send(ArrayBuffer,attribute)
 ```
 - `ArrayBuffer = Binary data`
-- `metadata = {connectId}` - `connectId` is target connection can single `connectId` , multiple with array `[connectId,connectId,...]` or `null` to all connection in channel
+- `attribute = {connectId,metadata}` - `connectId` is target connection can single `connectId` , multiple with array `[connectId,connectId,...]` or `null` to target all connection in channel - `metadata` is optional metadata object like filename or filetype
 
 ### Listen to sending progress for binary data
 
 ```javascript
-onSendProgress((metadata) => {})
+onSendProgress((attribute) => {})
 ```
-- `metadata = {percent,connectId}` - `percent` indicating the percentage between 0 and 1, `connectId` is target connection
+- `attribute = {percent,connectId}` - `percent` indicating the percentage between 0 and 1, `connectId` is target connection
 
 ### Listen to receiving data
 
 ```javascript
-onReceive((data,metadata) => {})
+onReceive((data,attribute) => {})
 ```
-- `data = String or Object`
-- `metadata = {connectId}` - `connectId` is connection identity
+- `data = String or Object or ArrayBuffer`
+- `attribute = {connectId,metadata}` - `connectId` is origin connection identity - `metadata` is object desciption about the ArrayBuffer
 
 ### Listen to receiving progress for binary data
 
 ```javascript
-onReceiveProgress((metadata) => {})
+onReceiveProgress((attribute) => {})
 ```
-- `metadata = {percent,connectId}` - `percent` indicating the percentage between 0 and 1, `connectId` is connection identity
+- `attribute = {percent,connectId}` - `percent` indicating the percentage between 0 and 1, `connectId` is origin connection identity
 
 ### Open streaming connection
 
 ```javascript
-openStreaming(stream,metadata)
+openStreaming(stream,attribute)
 ```
-- `stream` = A `MediaStream` with audio and/or video 
-- `metadata = {connectId}` - `connectId` is target connection
+- `stream = MediaStream` = A `MediaStream` with audio and/or video 
+- `attribute = {connectId}` - `connectId` is target connection
 
 ### Listen to incoming streaming connection
 
 ```javascript
-onStreaming((stream,metadata) => {})
+onStreaming((stream,attribute) => {})
 ```
 - `stream` = A `MediaStream` with audio and/or video 
-- `metadata = {connectId}` - `connectId` is connection identity
+- `attribute = {connectId}` - `connectId` is origin connection identity
 
 ### Get self connection identity
 
 ```javascript
-getMyId((metadata) => {})
+getMyId((attribute) => {})
 ```
-- `metadata = {connectId}` - `connectId` is self connection identity
+- `attribute = {connectId}` - `connectId` is self connection identity
 ### Get all connection identity in the channel
 
 ```javascript
-getConnection((metadata) => {})
+getConnection((attribute) => {})
 ```
-- `metadata = {connection}` - `connection` is Array of all connection identity
+- `attribute = {connection}` - `connection` is Array of all connection identity exclude self connection identity
 
 ### Get latency of connection which return a promise that resolve to milliseconds
 
 ```javascript
-Ping(metadata)
+Ping(attribute)
 ```
-- `metadata = {connectId}` - `connectId` is target connection
+- `attribute = {connectId}` - `connectId` is target connection
 
 ### Disconnect from channel
 
