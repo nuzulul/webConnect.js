@@ -12,7 +12,7 @@ class webConnect{
 	#torrentsendData
 	#ipfssendData
 	#mqttsendData
-	MyId
+	#MyId
 	
 	constructor(connect){
 		
@@ -28,7 +28,7 @@ class webConnect{
 		this.#TORRENT = torrent
 		this.#MQTT = mqtt
 		this.#IPFS = ipfs
-		this.MyId = MyId
+		this.#MyId = MyId
 		
 		torrent.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "torrent",this.#onJoin);})
 		ipfs.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "ipfs",this.#onJoin);})
@@ -339,6 +339,11 @@ class webConnect{
 			data.push(peer.id)
 		})
 		let output = {connection:data}
+		f(output)
+	}
+	
+	getMyId(f){
+		let output = {connectId:this.#MyId}
 		f(output)
 	}
 	

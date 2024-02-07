@@ -57,7 +57,7 @@ connect.onStreaming((stream,metadata) => video.srcObject = stream )
 ### Action
 Get My Connection Id
 ```javascript
-console.log(`MyId : ${connect.MyId}`)
+connect.getMyId((metadata) => console.log(`${metadata}`))
 ```
 Send Data
 ```javascript
@@ -69,7 +69,7 @@ connect.Send(ArrayBuffer,{connectId,metadata:{name: 'Report', type: 'application
 ```
 Open Streaming
 ```javascript
-connect.openStreaming(stream,{connectId,metadata})
+connect.openStreaming(stream,{connectId})
 ```
 Close Streaming
 ```javascript
@@ -85,7 +85,7 @@ connect.Disconnect()
 ```
 Get All Connection Id
 ```javascript
-connect.getConnection((data) => console.log(`${data}`))
+connect.getConnection((metadata) => console.log(`${metadata}`))
 ```
 ## Example
 ```javascript
@@ -197,9 +197,9 @@ onStreaming((stream,metadata) => {})
 ### Get self connection identity
 
 ```javascript
-getMyId()
+getMyId((metadata) => {})
 ```
-
+- `metadata = {connectId}` - `connectId` is self connection identity
 ### Get all connection identity in the channel
 
 ```javascript
