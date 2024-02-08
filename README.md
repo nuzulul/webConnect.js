@@ -4,6 +4,13 @@
 [![NPM](https://nodei.co/npm/webconnect.png?mini=true)](https://www.npmjs.com/package/webconnect)
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
 
+webConnect.js over a browser to browser connection for static client side HTML, which is usually impossible. Previously, the solution available was using webRTC transport, which still required to setup a signaling server as a middleman. This library works by leveraging already established P2P networks, such as IPFS Network or Torrent Network for signaling. Now static web pages can talk to each other, even hosts on static hosting such as github pages, cloudflare pages, gitlab pages, or netlify.
+
+## Features
+
+* ✅ Bypass NAT
+* ✅ Bypass VPN
+
 ## Installation
 
 NPM
@@ -97,19 +104,17 @@ connect.getConnection((attribute) => console.log(`${attribute.connection}`))
 <script type="module">
 	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.2/dist/esm/webconnect.js'
 	
-	const connect = webconnect({
-		appName:"myApp"
-	})
+	const connect = webconnect({})
 	connect.onConnect(async(attribute)=>{
-		console.log(attribute)
+		console.log("Connect",attribute)
 		connect.Send("hello",{connectId:attribute.connectId})
 		console.log(await connect.Ping({connectId:attribute.connectId}))
 		connect.getConnection((attribute)=>{
-			console.log(attribute.connection)
+			console.log("Connection",attribute)
 		})
 	})
 	connect.onDisconnect((attribute)=>{
-		console.log(attribute)
+		console.log("Disconnect",attribute)
 	})
 	
 	connect.onReceive((data,attribute) =>{
