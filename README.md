@@ -53,7 +53,7 @@ connect.onReceive((data,attribute) => console.log(`${data} from ${attribute.conn
 ```
 Listen on sending progress
 ```javascript
-connect.onSendProgress((attribute) => console.log(`Sending progress : ${attribute.percent} from ${attribute.connectId}`))
+connect.onSendProgress((attribute) => console.log(`Sending progress : ${attribute.percent} to ${attribute.connectId}`))
 ```
 Listen on receiving progress
 ```javascript
