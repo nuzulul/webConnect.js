@@ -27,10 +27,10 @@ import webconnect from 'webconnect'
 ```
 CDN
 ```javascript
-<script src="https://cdn.jsdelivr.net/npm/webconnect@0.0.2/dist/umd/webconnect.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/webconnect@0.0.3/dist/umd/webconnect.js"></script>
 ```
 ```javascript
-<script type="module">import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.2/dist/esm/webconnect.js'</script>
+<script type="module">import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.3/dist/esm/webconnect.js'</script>
 ```
 ## Get Started
 ### Initialization
@@ -80,7 +80,7 @@ connect.Send(buffer,attribute)
 ```
 Open Streaming
 ```javascript
-const attribute = {connectId,metadata:{name:"Daily Meeting"}}
+const attribute = {connectId,metadata:{name:'Meeting'}}
 connect.openStreaming(stream,attribute)
 ```
 Close Streaming
@@ -104,7 +104,7 @@ connect.getConnection((attribute) => console.log(`${attribute.connection}`))
 ## Example
 ```javascript
 <script type="module">
-	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.2/dist/esm/webconnect.js'
+	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.3/dist/esm/webconnect.js'
 	
 	const connect = webconnect({})
 	connect.onConnect(async(attribute)=>{

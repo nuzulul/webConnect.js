@@ -1,6 +1,6 @@
 {
   "name": "webconnect",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "📶 Browser to browser connection without server",
   "main": "dist/umd/webConnect.umd.js",
   "module": "dist/esm/webConnect.esm.js",
