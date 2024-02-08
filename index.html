@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Demo webConnect.js</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+</head>
+
+<body>
+<ul id="myList"></ul>
+<script type="module">
+	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.3/dist/esm/webconnect.js'
+	
+	const connect = webconnect({})
+	
+	connect.getMyId((attribute) => write('My connectId is '+attribute.connectId))
+	
+	connect.onConnect(async(attribute)=>{
+	
+		write(attribute.connectId+' is connected')
+		console.log("Connect",attribute)
+		
+		write('Say hello to '+attribute.connectId)
+		connect.Send("hello",{connectId:attribute.connectId})
+
+		write('Latency '+attribute.connectId+' is '+await connect.Ping({connectId:attribute.connectId})+' ms')
+		
+	})
+	connect.onDisconnect((attribute)=>{
+		write(attribute.connectId+' is disconnected')
+		console.log("Disconnect",attribute)
+	})
+	
+	connect.onReceive((data,attribute) =>{
+		write(attribute.connectId+' say : '+data)
+		console.log(data,attribute)
+	})
+	
+	function write(input){
+		const node = document.createElement("li")
+		const textnode = document.createTextNode(input)
+		node.appendChild(textnode)
+		document.getElementById("myList").appendChild(node)
+	}
+</script>
+</body>
+
+</html>
