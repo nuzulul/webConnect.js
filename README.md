@@ -174,7 +174,7 @@ onSendProgress((attribute) => {})
 onReceive((data,attribute) => {})
 ```
 - `data = String or Object or ArrayBuffer`
-- `attribute = {connectId,metadata}` - `connectId` is origin connection identity - `metadata` is object desciption about the ArrayBuffer
+- `attribute = {connectId,metadata}` - `connectId` is origin connection identity - `metadata` is object description about the ArrayBuffer
 
 ### Listen to receiving progress for binary data
 
