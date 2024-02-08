@@ -4,7 +4,7 @@
 [![NPM](https://nodei.co/npm/webconnect.png?mini=true)](https://www.npmjs.com/package/webconnect)
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
 
-webConnect.js over a browser to browser connection for static client side HTML, which is usually impossible. Previously, the solution available was using webRTC transport, which still required to setup a signaling server as a middleman. This library works by leveraging already established P2P networks, such as IPFS Network or Torrent Network for signaling. Now static web pages can talk to each other, even hosts on static hosting such as github pages, cloudflare pages, gitlab pages, or netlify.
+webConnect.js over a browser to browser connection for static client side HTML, which is usually impossible. Previously, the solution available was using webRTC transport, which still required to setup a signaling server as a middleman. This library works by leveraging already established P2P networks, such as IPFS Network or Torrent Network for signaling. Now static web pages can talk to each other, even hosts on static hosting such as github pages, cloudflare pages, gitlab pages, netlify or localhost.
 
 Demo : [https://nuzulul.github.io/webConnect.js/](https://nuzulul.github.io/webConnect.js/)
 
