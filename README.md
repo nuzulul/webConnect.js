@@ -1,14 +1,18 @@
 # webConnect.js
-📶 Browser to browser connection without server
+📶 No backend WebRTC connection for static web
 
 [![NPM](https://nodei.co/npm/webconnect.png?mini=true)](https://www.npmjs.com/package/webconnect)
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
 
+Demo : [https://nuzulul.github.io/webConnect.js/](https://nuzulul.github.io/webConnect.js/)
+
 ## Why?
 
-A direct browser to browser connection for static client side web pages is normally impossible. Previously, the solution available was using webRTC transport, which still required to use a signaling server as a middleman. This library works by leveraging already established P2P networks, such as IPFS Network or Torrent Network for signaling. Now static web pages can talk to each other, even hosts on static hosting such as github pages, cloudflare pages, gitlab pages, netlify or localhost.
+I got tired of building and maintenance signaling server for my WebRTC projects
 
-Demo : [https://nuzulul.github.io/webConnect.js/](https://nuzulul.github.io/webConnect.js/)
+## How it works?
+
+A direct browser to browser connection for static client side web pages is normally impossible. Previously, the solution available was using webRTC transport, which still required to setup a signaling server as a middleman. This library works by leveraging already established P2P networks, such as IPFS Network or Torrent Network for signaling, eliminating the need for backend servers forever. Now static web pages can talk to each other, even hosts on static hosting such as github pages, cloudflare pages, gitlab pages, netlify or localhost.
 
 ## Features
 
@@ -17,7 +21,17 @@ Demo : [https://nuzulul.github.io/webConnect.js/](https://nuzulul.github.io/webC
 
 ## Installation
 
-NPM
+CDN
+```javascript
+<script src="https://cdn.jsdelivr.net/npm/webconnect@0.0.3/dist/umd/webconnect.js"></script>
+```
+```javascript
+<script type="module">
+	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.3/dist/esm/webconnect.js'
+</script>
+```
+
+Browserify
 ```javascript
 npm install webconnect
 
@@ -27,13 +41,7 @@ const webconnect = require('webconnect')
 //ES Module
 import webconnect from 'webconnect'
 ```
-CDN
-```javascript
-<script src="https://cdn.jsdelivr.net/npm/webconnect@0.0.3/dist/umd/webconnect.js"></script>
-```
-```javascript
-<script type="module">import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.3/dist/esm/webconnect.js'</script>
-```
+
 ## Get Started
 ### Initialization
 
