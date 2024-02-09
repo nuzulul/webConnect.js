@@ -357,12 +357,21 @@ export function webconnect({
 			iceConfiguration = {
 				iceServers: [
 					{
-						urls: 'turn:numb.viagenie.ca',
-						credential: 'myturn33',
-						username: 'hxuwb10o@anonaddy.me',
+						urls: 'stun:stun.l.google.com:19302',
+					},
+					{
+						urls: 'stun:global.stun.twilio.com:3478',
+					},
+					{
+						urls: 'stun:freeturn.net:3478',
 					},
 					{
 						urls: "stun:stun.relay.metered.ca:80",
+					},
+					{
+						urls: 'turn:freeturn.net:3478',
+						credential: 'free',
+						username: 'free',
 					},
 					{
 						urls: "turn:standard.relay.metered.ca:80",

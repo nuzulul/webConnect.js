@@ -17,6 +17,7 @@
     "build-dev-esm": "tsc -p tsconfig-devesm.json",
     "dev-browser": "nodemon -e js,ts --watch src --watch test --exec \"tsc -p tsconfig-rollup.json && rollup -c public/config/rollup.config.dev.js && node test/server-browser.js\"",
     "dev": "npm run dev-browser",
+	
     "removedir": "node -e \"var fs = require('fs'); try{process.argv.slice(1).map((fpath) => fs.rmdirSync(fpath, { recursive: true }))}catch(err){console.log(`Dist not found`)}; process.exit(0);\"",
     "build-all": "tsc -p tsconfig-rollup.json && rollup -c public/config/rollup.config.build.js && echo {\"type\": \"commonjs\"}>dist\\umd\\package.json && echo {\"type\": \"module\"}>dist\\esm\\package.json",
     "build-types": "tsc -p tsconfig-rollup.json && rollup -c public/config/rollup.config.buildtypes.js && tsc -p tsconfig-esm.json && tsc -p tsconfig-umd.json",
