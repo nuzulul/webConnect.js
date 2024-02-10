@@ -1,5 +1,5 @@
 # webConnect.js
-📶 No backend WebRTC connection for static web
+📶 WebRTC browser to browser connection without backend server for static web
 
 [![NPM](https://nodei.co/npm/webconnect.png?mini=true)](https://www.npmjs.com/package/webconnect)
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
