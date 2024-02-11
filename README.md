@@ -1,10 +1,10 @@
 # webConnect.js
-📶 WebRTC browser to browser connection without backend server for static web
+📶 WebRTC peer-to-peer connection without signaling server for static web
 
 [![NPM](https://nodei.co/npm/webconnect.png?mini=true)](https://www.npmjs.com/package/webconnect)
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
 
-Demo : [https://nuzulul.github.io/webConnect.js/](https://nuzulul.github.io/webConnect.js/)
+Demo : [https://nuzulul.github.io/webConnect.js/demo/](https://nuzulul.github.io/webConnect.js/demo/)
 
 ## Why?
 
@@ -12,7 +12,7 @@ I got tired of building and maintenance signaling server for my WebRTC projects
 
 ## How it works?
 
-A direct browser to browser connection for static client side web pages is normally impossible. Previously, the solution available was using webRTC transport, which still required to setup a signaling server as a middleman. This library works by leveraging already established P2P networks, such as IPFS Network or Torrent Network for signaling, eliminating the need for backend servers forever. Now static web pages can talk to each other, even hosts on static hosting such as github pages, cloudflare pages, gitlab pages, netlify or localhost.
+A direct browser to browser connection for static client side web pages is normally impossible. Previously, the solution available was using WebRTC transport, which still required to setup a signaling server as a middleman. This library works by leveraging already established P2P networks, such as IPFS Network or Torrent Network for signaling, eliminating the need for backend servers forever. Now static web pages can talk to each other, even hosts on static hosting such as github pages, cloudflare pages, gitlab pages, netlify or localhost.
 
 ## Features
 
