@@ -61,5 +61,17 @@
   "bugs": {
     "url": "https://github.com/nuzulul/webConnect.js/issues"
   },
-  "homepage": "https://github.com/nuzulul/webConnect.js#readme"
+  "homepage": "https://github.com/nuzulul/webConnect.js#readme",
+  "dependencies": {
+    "trystero": "^0.17.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "nodemon": "^3.0.3",
+    "rollup": "^4.9.6",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  }
 }

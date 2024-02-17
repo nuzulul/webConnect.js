@@ -46,7 +46,7 @@ import webconnect from 'webconnect'
 ### Initialization
 
 ```javascript
-const connect = await webconnect({})
+const connect = webconnect({})
 ```
 ### Listen
 Listen on new connect
