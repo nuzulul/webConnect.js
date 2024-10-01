@@ -1,5 +1,5 @@
 import * as joinRoomTORRENT from 'trystero'
-import * as joinRoomIPFS from 'trystero/ipfs'
+import * as joinRoomNOSTR from 'trystero/nostr'
 import * as joinRoomMQTT from 'trystero/mqtt'
 
 class webConnect{
@@ -8,9 +8,9 @@ class webConnect{
 	#DB
 	#TORRENT
 	#MQTT
-	#IPFS 
+	#NOSTR 
 	#torrentsendData
-	#ipfssendData
+	#nostrsendData
 	#mqttsendData
 	#MyId
 	
@@ -20,26 +20,26 @@ class webConnect{
 		
 		const db = connect.db
 		const torrent = connect.room.roomTORRENT
-		const ipfs = connect.room.roomIPFS
+		const nostr = connect.room.roomNOSTR
 		const mqtt = connect.room.roomMQTT
 		const MyId = connect.MyId
 		
 		this.#DB = db
 		this.#TORRENT = torrent
 		this.#MQTT = mqtt
-		this.#IPFS = ipfs
+		this.#NOSTR = nostr
 		this.#MyId = MyId
 		
 		torrent.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "torrent",this.#onJoin);})
-		ipfs.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "ipfs",this.#onJoin);})
+		nostr.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "nostr",this.#onJoin);})
 		mqtt.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "mqtt",this.#onJoin);})
 
 		torrent.onPeerLeave((peerId)=>{this.#onconnectPeerLeave(peerId, "torrent",this.#onLeave);})
-		ipfs.onPeerLeave((peerId)=>{this.#onconnectPeerLeave(peerId, "ipfs",this.#onLeave);})
+		nostr.onPeerLeave((peerId)=>{this.#onconnectPeerLeave(peerId, "nostr",this.#onLeave);})
 		mqtt.onPeerLeave((peerId)=>{this.#onconnectPeerLeave(peerId, "mqtt",this.#onLeave);})
 
 		torrent.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(stream,peerId,metadata, "torrent",this.#onStream);})
-		ipfs.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(stream,peerId,metadata, "ipfs",this.#onStream);})
+		nostr.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(stream,peerId,metadata, "nostr",this.#onStream);})
 		mqtt.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(setream,peerId,metadata, "mqtt",this.#onStream);})
 		
 		const [torrentsendData, torrentgetData, torrentonDataProgress] = torrent.makeAction('data')
@@ -47,15 +47,15 @@ class webConnect{
 		torrentgetData((data, peerId, metadata) => this.#fgetData(data, peerId, metadata, "torrent",this.#onGet))
 		torrentonDataProgress((percent, peerId, metadata) => {this.#onconnectReceiveProggress(percent, peerId, metadata,"torrent",this.#ReceiveProgress)})
 
-		const [ipfssendData, ipfsgetData, ipfsonDataProgress] = ipfs.makeAction('data')
-		this.#ipfssendData = ipfssendData
-		ipfsgetData((data, peerId, metadata) => this.#fgetData(data, peerId, metadata, "ipfs",this.#onGet))
-		ipfsonDataProgress((percent, peerId, metadata) => {this.#onconnectReceiveProggress(percent, peerId, metadata,"mqtt",this.#ReceiveProgress)})
+		const [nostrsendData, nostrgetData, nostronDataProgress] = nostr.makeAction('data')
+		this.#nostrsendData = nostrsendData
+		nostrgetData((data, peerId, metadata) => this.#fgetData(data, peerId, metadata, "nostr",this.#onGet))
+		nostronDataProgress((percent, peerId, metadata) => {this.#onconnectReceiveProggress(percent, peerId, metadata,"mqtt",this.#ReceiveProgress)})
 
 		const [mqttsendData, mqttgetData, mqttonDataProgress] = mqtt.makeAction('data')
 		this.#mqttsendData = mqttsendData
 		mqttgetData((data, peerId, metadata) => this.#fgetData(data, peerId, metadata, "mqtt",this.#onGet))
-		mqttonDataProgress((percent, peerId, metadata) => {this.#onconnectReceiveProggress(percent, peerId, metadata,"ipfs",this.#ReceiveProgress)})
+		mqttonDataProgress((percent, peerId, metadata) => {this.#onconnectReceiveProggress(percent, peerId, metadata,"nostr",this.#ReceiveProgress)})
 		
 		//this.#loopping()
 		
@@ -102,8 +102,8 @@ class webConnect{
 				this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "torrent",this.#SendProgress);})
 			}else if(protocol == "mqtt"){
 				this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
-			}else if(protocol == "ipfs"){
-				this.#ipfssendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "ipfs",this.#SendProgress);})
+			}else if(protocol == "nostr"){
+				this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "nostr",this.#SendProgress);})
 			}
 		}else{
 			if(arrpeers != null&&Array.isArray(arrpeers)){
@@ -117,8 +117,8 @@ class webConnect{
 						else if (engine.includes("mqtt")){
 							this.#mqttsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
 						}
-						else if (engine.includes("ipfs")){
-							this.#ipfssendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "ipfs",this.#SendProgress);})
+						else if (engine.includes("nostr")){
+							this.#nostrsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "nostr",this.#SendProgress);})
 						}
 					}
 					
@@ -133,8 +133,8 @@ class webConnect{
 						else if (engine.includes("mqtt")){
 							this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
 						}
-						else if (engine.includes("ipfs")){
-							this.#ipfssendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "ipfs",this.#SendProgress);})
+						else if (engine.includes("nostr")){
+							this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "nostr",this.#SendProgress);})
 						}
 					}
 					
@@ -143,7 +143,7 @@ class webConnect{
 				if(payload == "webconnectping"){
 					this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "torrent",this.#SendProgress);})
 					this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
-					this.#ipfssendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "ipfs",this.#SendProgress);})
+					this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "nostr",this.#SendProgress);})
 				}else{
 					this.#connectpeers.forEach((peer,index)=>{
 						let engine = peer.engine
@@ -153,8 +153,8 @@ class webConnect{
 						else if (engine.includes("mqtt")){
 							this.#mqttsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
 						}
-						else if (engine.includes("ipfs")){
-							this.#ipfssendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "ipfs",this.#SendProgress);})
+						else if (engine.includes("nostr")){
+							this.#nostrsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "nostr",this.#SendProgress);})
 						}
 					})
 				}
@@ -184,8 +184,8 @@ class webConnect{
 					this.#connectpeers[searchPeer].online.torrent = time
 				}else if(protocol == "mqtt"){
 					this.#connectpeers[searchPeer].online.mqtt = time
-				}else if(protocol == "ipfs"){
-					this.#connectpeers[searchPeer].online.ipfs = time
+				}else if(protocol == "nostr"){
+					this.#connectpeers[searchPeer].online.nostr = time
 				}
 			}
 		}else{
@@ -251,8 +251,8 @@ class webConnect{
 				else if (engine.includes("mqtt")){
 					this.#MQTT.addStream(stream, peer.id, metadata)
 				}
-				else if (engine.includes("ipfs")){
-					this.#IPFS.addStream(stream, peer.id, metadata)
+				else if (engine.includes("nostr")){
+					this.#NOSTR.addStream(stream, peer.id, metadata)
 				}
 			})
 		}else{
@@ -265,8 +265,8 @@ class webConnect{
 				else if (engine.includes("mqtt")){
 					this.#MQTT.addStream(stream, peerId, metadata)
 				}
-				else if (engine.includes("ipfs")){
-					this.#IPFS.addStream(stream, peerId, metadata)
+				else if (engine.includes("nostr")){
+					this.#NOSTR.addStream(stream, peerId, metadata)
 				}
 			}
 		}
@@ -283,7 +283,7 @@ class webConnect{
 				engine.forEach((protocol,idx)=>{
 						if(protocol == "torrent")this.#TORRENT.removeStream(stream, peer.id)
 						if(protocol == "mqtt")this.#MQTT.removeStream(stream, peer.id)
-						if(protocol == "ipfs")this.#IPFS.removeStream(stream, peer.id)
+						if(protocol == "nostr")this.#NOSTR.removeStream(stream, peer.id)
 				})
 			})	
 		}else if(typeof peerId === 'string'){
@@ -296,8 +296,8 @@ class webConnect{
 				else if (engine.includes("mqtt")){
 					this.#MQTT.addStream(stream, peerId)
 				}
-				else if (engine.includes("ipfs")){
-					this.#IPFS.addStream(stream, peerId)
+				else if (engine.includes("nostr")){
+					this.#NOSTR.addStream(stream, peerId)
 				}
 			}
 		}
@@ -317,8 +317,8 @@ class webConnect{
 				else if (engine.includes("mqtt")){
 					return await this.#MQTT.ping(peerId)
 				}
-				else if (engine.includes("ipfs")){
-					return await this.#IPFS.ping(peerId)
+				else if (engine.includes("nostr")){
+					return await this.#NOSTR.ping(peerId)
 				}
 			}
 			
@@ -331,7 +331,7 @@ class webConnect{
 	Disconnect(){
 		if(Object.keys(this.#TORRENT.getPeers()).length !== 0)this.#TORRENT.leave()
 		if(Object.keys(this.#MQTT.getPeers()).length !== 0)this.#MQTT.leave()
-		if(Object.keys(this.#IPFS.getPeers()).length !== 0)this.#IPFS.leave()
+		if(Object.keys(this.#NOSTR.getPeers()).length !== 0)this.#NOSTR.leave()
 	}
 
 	getConnection(f){
@@ -401,7 +401,7 @@ export function webconnect({
 	
 	const roomTORRENT = joinRoomTORRENT.joinRoom(config, channelName)
 	
-	const roomIPFS = joinRoomIPFS.joinRoom(config, channelName)
+	const roomNOSTR = joinRoomNOSTR.joinRoom(config, channelName)
 	
 	const roomMQTT = joinRoomMQTT.joinRoom(config, channelName)
 
@@ -411,7 +411,7 @@ export function webconnect({
 	
 	const connect = {db:db,room:{
 		roomTORRENT,
-		roomIPFS,
+		roomNOSTR,
 		roomMQTT
 	},MyId}
 

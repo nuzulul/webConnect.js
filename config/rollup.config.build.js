@@ -10,7 +10,7 @@ export default [
       format: 'es',
     }
   ],
-  plugins: [nodeResolve({browser: true}), commonjs()]
+  plugins: [nodeResolve({browser: true,preferBuiltins: false}), commonjs()]
 },
 {
   input: 'src/umd.js',
@@ -21,6 +21,6 @@ export default [
       name: 'webconnect',
     }
   ],
-  plugins: [nodeResolve({browser: true}), commonjs()]
+  plugins: [nodeResolve({browser: true,preferBuiltins: false}), commonjs()]
 }
 ]
