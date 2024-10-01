@@ -1,6 +1,6 @@
 {
   "name": "webconnect",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "📶 Browser to browser connection without server",
   "main": "dist/umd/webConnect.umd.js",
   "module": "dist/esm/webConnect.esm.js",
@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "start": "npm run dev-node",
+    "start": "npm run dev",
     "pre-dev": "npm install --include dev",
     "build-dev-cjs": "tsc -p tsconfig-devcjs.json",
     "build-dev-esm": "tsc -p tsconfig-devesm.json",

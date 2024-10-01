@@ -1,7 +1,6 @@
 # webConnect.js
-📶 WebRTC peer-to-peer connection without signaling server for static web
+📶 WebRTC peer-to-peer connection without signaling server
 
-[![NPM](https://nodei.co/npm/webconnect.png?mini=true)](https://www.npmjs.com/package/webconnect)
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
 
 Demo : [https://nuzulul.github.io/webConnect.js/demo/](https://nuzulul.github.io/webConnect.js/demo/)
@@ -23,11 +22,11 @@ A direct browser to browser connection for static client side web pages is norma
 
 CDN
 ```javascript
-<script src="https://cdn.jsdelivr.net/npm/webconnect@0.0.4/dist/umd/webconnect.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/webconnect@0.0.5/dist/umd/webconnect.js"></script>
 ```
 ```javascript
 <script type="module">
-	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.4/dist/esm/webconnect.js'
+	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.5/dist/esm/webconnect.js'
 </script>
 ```
 
@@ -114,7 +113,7 @@ connect.getConnection((attribute) => console.log(`${attribute.connection}`))
 ## Example
 ```javascript
 <script type="module">
-	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.4/dist/esm/webconnect.js'
+	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.5/dist/esm/webconnect.js'
 	
 	const connect = webconnect({})
 	connect.onConnect(async(attribute)=>{

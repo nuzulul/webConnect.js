@@ -361,38 +361,7 @@ export function webconnect({
 					},
 					{
 						urls: 'stun:global.stun.twilio.com:3478',
-					},
-					{
-						urls: 'stun:freeturn.net:3478',
-					},
-					{
-						urls: "stun:stun.relay.metered.ca:80",
-					},
-					{
-						urls: 'turn:freeturn.net:3478',
-						credential: 'free',
-						username: 'free',
-					},
-					{
-						urls: "turn:standard.relay.metered.ca:80",
-						username: "ffe6b198c8c1b398859ab8f8",
-						credential: "ijdB5Sq20DElg7CF",
-					},
-					{
-						urls: "turn:standard.relay.metered.ca:80?transport=tcp",
-						username: "ffe6b198c8c1b398859ab8f8",
-						credential: "ijdB5Sq20DElg7CF",
-					},
-					{
-						urls: "turn:standard.relay.metered.ca:443",
-						username: "ffe6b198c8c1b398859ab8f8",
-						credential: "ijdB5Sq20DElg7CF",
-					},
-					{
-						urls: "turns:standard.relay.metered.ca:443?transport=tcp",
-						username: "ffe6b198c8c1b398859ab8f8",
-						credential: "ijdB5Sq20DElg7CF",
-					},
+					}
 			  ]
 			}
 }){
@@ -407,7 +376,7 @@ export function webconnect({
 
 	const db = false
 
-	const MyId = joinRoomTORRENT.selfId || joinRoomMQTT.selfId || joinRoomMQTT.selfId
+	const MyId = joinRoomTORRENT.selfId || joinRoomNOSTR.selfId || joinRoomMQTT.selfId
 	
 	const connect = {db:db,room:{
 		roomTORRENT,
