@@ -99,11 +99,11 @@ class webConnect{
 	#fsendData(protocol,payload,arrpeers,objmetadata){
 		if(protocol !== "" && protocol != undefined){
 			if(protocol == "torrent"){
-				this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "torrent",this.#SendProgress);})
+				this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "torrent",this.#SendProgress);})
 			}else if(protocol == "mqtt"){
-				this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
+				this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "mqtt",this.#SendProgress);})
 			}else if(protocol == "nostr"){
-				this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "nostr",this.#SendProgress);})
+				this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "nostr",this.#SendProgress);})
 			}
 		}else{
 			if(arrpeers != null&&Array.isArray(arrpeers)){
@@ -112,13 +112,13 @@ class webConnect{
 					if(searchPeer > -1){
 						let engine = this.#connectpeers[searchPeer].engine
 						if(engine.includes("torrent")){
-							this.#torrentsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "torrent",this.#SendProgress);})
+							this.#torrentsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "torrent",this.#SendProgress);})
 						}
 						else if (engine.includes("mqtt")){
-							this.#mqttsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
+							this.#mqttsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "mqtt",this.#SendProgress);})
 						}
 						else if (engine.includes("nostr")){
-							this.#nostrsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "nostr",this.#SendProgress);})
+							this.#nostrsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "nostr",this.#SendProgress);})
 						}
 					}
 					
@@ -128,33 +128,33 @@ class webConnect{
 					if(searchPeer > -1){
 						let engine = this.#connectpeers[searchPeer].engine
 						if(engine.includes("torrent")){
-							this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "torrent",this.#SendProgress);})
+							this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "torrent",this.#SendProgress);})
 						}
 						else if (engine.includes("mqtt")){
-							this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
+							this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "mqtt",this.#SendProgress);})
 						}
 						else if (engine.includes("nostr")){
-							this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "nostr",this.#SendProgress);})
+							this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "nostr",this.#SendProgress);})
 						}
 					}
 					
 			
 			}else{
 				if(payload == "webconnectping"){
-					this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "torrent",this.#SendProgress);})
-					this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
-					this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "nostr",this.#SendProgress);})
+					this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "torrent",this.#SendProgress);})
+					this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "mqtt",this.#SendProgress);})
+					this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "nostr",this.#SendProgress);})
 				}else{
 					this.#connectpeers.forEach((peer,index)=>{
 						let engine = peer.engine
 						if(engine.includes("torrent")){
-							this.#torrentsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "torrent",this.#SendProgress);})
+							this.#torrentsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "torrent",this.#SendProgress);})
 						}
 						else if (engine.includes("mqtt")){
-							this.#mqttsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "mqtt",this.#SendProgress);})
+							this.#mqttsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "mqtt",this.#SendProgress);})
 						}
 						else if (engine.includes("nostr")){
-							this.#nostrsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId, "nostr",this.#SendProgress);})
+							this.#nostrsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "nostr",this.#SendProgress);})
 						}
 					})
 				}
@@ -162,8 +162,8 @@ class webConnect{
 		}
 	}
 	
-	#onconnectSendProggress(percent, peerId,protocol,callback){
-		let connectoutput = {percent,connectId:peerId}
+	#onconnectSendProggress(percent, peerId,metadata,protocol,callback){
+		let connectoutput = {percent,connectId:peerId,metadata}
 		callback(connectoutput)
 	}
 	
