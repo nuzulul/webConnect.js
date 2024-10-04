@@ -173,19 +173,21 @@ class webConnect{
 	}
 	
 	#fgetData(data, peerId, metadata,protocol,callback){
-		if(data=="webconnectping"){
-			this.#fpong(peerId,protocol)			
-		}else if(data=="webconnectpong"){
-			const searchPeer = this.#connectpeers.findIndex((peer) => peer.id==peerId)
-			if(searchPeer > -1){
-				const d = new Date()
-				let time = d.getTime()
-				if(protocol == "torrent"){
-					this.#connectpeers[searchPeer].online.torrent = time
-				}else if(protocol == "mqtt"){
-					this.#connectpeers[searchPeer].online.mqtt = time
-				}else if(protocol == "nostr"){
-					this.#connectpeers[searchPeer].online.nostr = time
+		if(metadata == undefined){
+			if(data=="webconnectping"){
+				this.#fpong(peerId,protocol)			
+			}else if(data=="webconnectpong"){
+				const searchPeer = this.#connectpeers.findIndex((peer) => peer.id==peerId)
+				if(searchPeer > -1){
+					const d = new Date()
+					let time = d.getTime()
+					if(protocol == "torrent"){
+						this.#connectpeers[searchPeer].online.torrent = time
+					}else if(protocol == "mqtt"){
+						this.#connectpeers[searchPeer].online.mqtt = time
+					}else if(protocol == "nostr"){
+						this.#connectpeers[searchPeer].online.nostr = time
+					}
 				}
 			}
 		}else{
