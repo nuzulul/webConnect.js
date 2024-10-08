@@ -341,7 +341,8 @@ class webConnect{
 		this.#connectpeers.forEach((peer,index)=>{
 			data.push(peer.id)
 		})
-		let output = {connection:data}
+		const connections = this.#TORRENT.getPeers() || this.#MQTT.getPeers() || this.#NOSTR.getPeers()
+		let output = {connection:data,connections}
 		f(output)
 	}
 	
