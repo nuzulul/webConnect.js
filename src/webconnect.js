@@ -1,3 +1,5 @@
+//! Copyright Nuzulul Zulkarnain. Released under The MIT License.
+//! webConnect.js -- https://github.com/nuzulul/webConnect.js
 import * as joinRoomTORRENT from 'trystero'
 import * as joinRoomNOSTR from 'trystero/nostr'
 import * as joinRoomMQTT from 'trystero/mqtt'

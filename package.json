@@ -1,7 +1,7 @@
 {
   "name": "webconnect",
-  "version": "0.0.9",
-  "description": "📶 WebRTC peer-to-peer connection without signaling server",
+  "version": "0.0.10",
+  "description": "📶 Auto WebRTC peer-to-peer connection",
   "main": "dist/umd/webconnect.js",
   "module": "dist/esm/webconnect.js",
   "exports": {

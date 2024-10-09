@@ -1,5 +1,5 @@
 # webConnect.js
-📶 WebRTC peer-to-peer connection without signaling server
+📶 Auto WebRTC peer-to-peer connection
 
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
 
@@ -11,26 +11,26 @@ I got tired of building and maintenance signaling server for my WebRTC projects
 
 ## How it works?
 
-A direct browser to browser connection for static client side web pages is normally impossible. Previously, the solution available was using WebRTC transport, which still required to setup a signaling server as a middleman. This library works by leveraging already established P2P networks, such as IPFS Network or Torrent Network for signaling, eliminating the need for backend servers forever. Now static web pages can talk to each other, even hosts on static hosting such as github pages, cloudflare pages, gitlab pages, netlify or localhost.
+A direct browser to browser connection for static client side web application is normally impossible. Currently, the solution available was using WebRTC transport, which still required to setup a signaling server as a middleman. This library works by leveraging already established public protocol, such as Torrent, MQTT and NOSTR for signaling, eliminating the need for backend servers forever. Now static client side web application can talk to each other, even hosts on static hosting such as github pages, cloudflare pages, gitlab pages, netlify or any other static hosting even on local host.
 
 ## Features
 
-* ✅ Bypass NAT
-* ✅ Bypass VPN
+* ✅ Auto p2p WebRTC connection
+* ✅ Zero configuration for local network connection
 
 ## Installation
 
 CDN
 ```javascript
-<script src="https://cdn.jsdelivr.net/npm/webconnect@0.0.9/dist/umd/webconnect.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/webconnect@0.0.10/dist/umd/webconnect.js"></script>
 ```
 ```javascript
 <script type="module">
-	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.9/dist/esm/webconnect.js'
+	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.10/dist/esm/webconnect.js'
 </script>
 ```
 
-Browserify
+Browserify / NPM
 ```javascript
 npm install webconnect
 
@@ -113,7 +113,7 @@ connect.getConnection((attribute) => console.log(`${attribute.connection}`))
 ## Example
 ```javascript
 <script type="module">
-	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.9/dist/esm/webconnect.js'
+	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.10/dist/esm/webconnect.js'
 	
 	const connect = webconnect({})
 	connect.onConnect(async(attribute)=>{
@@ -234,7 +234,7 @@ getMyId((attribute) => {})
 ```javascript
 getConnection((attribute) => {})
 ```
-- `attribute = {connection}` - `connection` is Array of all connection identity exclude self connection identity
+- `attribute = {connection,connections}` - `connection` is Array of all connection identity exclude self connection identity - `connections` is [RTCPeerConnection](https://nuzulul.github.io/webConnect.js/demo/) object
 
 ### Get latency of connection which return a promise that resolve to milliseconds
 
@@ -253,3 +253,7 @@ Disconnect()
 ## License
 
 [MIT](https://github.com/nuzulul/webConnect.js/blob/main/LICENSE)
+
+## Maintainers
+
+[Nuzulul Zulkarnain](https://github.com/nuzulul)
