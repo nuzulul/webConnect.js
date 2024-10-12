@@ -1,9 +1,11 @@
 # webConnect.js
-📶 Auto WebRTC peer-to-peer connection
+📶 Auto WebRTC Mesh P2P Connection
 
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
 
 Demo : [https://nuzulul.github.io/webConnect.js/demo/](https://nuzulul.github.io/webConnect.js/demo/)
+
+![webConnect.js](webconnectjs.png)
 
 ## Why?
 
@@ -11,11 +13,11 @@ I got tired of building and maintenance signaling server for my WebRTC projects
 
 ## How it works?
 
-A direct browser to browser connection for static client side web application is normally impossible. Currently, the solution available was using WebRTC transport, which still required to setup a signaling server as a middleman. This library works by leveraging already established public protocol, such as Torrent, MQTT and NOSTR for signaling, eliminating the need for backend servers forever. Now static client side web application can talk to each other, even hosts on static hosting such as github pages, cloudflare pages, gitlab pages, netlify or any other static hosting even on local host.
+A direct browser to browser connection for static client side web application is normally impossible. Currently, the solution available was using WebRTC transport, which still required to setup a signaling server as a middleman. webConnect.js can create auto WebRTC mesh peer-to-peer connection without any hassle. This library works by leveraging already established public protocol, such as Torrent, MQTT and NOSTR for signaling, eliminating the need for backend servers forever. Now static client side web application can talk to each other, even hosts on static hosting such as github pages, cloudflare pages, gitlab pages, netlify or any other static hosting you name it even on local host.
 
 ## Features
 
-* ✅ Auto p2p WebRTC connection
+* ✅ Auto WebRTC mesh p2p connection
 * ✅ Zero configuration for local network connection
 
 ## Installation
@@ -249,6 +251,10 @@ Ping(attribute)
 Disconnect()
 ```
 
+## Related
+
+- [WebPEER](https://github.com/nuzulul/webpeerjs) - WebPEER is a novel decentralized P2P network overlay inside browser with a chance of working.
+- [RingsNetwork](https://github.com/RingsNetwork/rings) - Rings is a structured peer-to-peer network implementation using WebRTC, Chord DHT, and full WebAssembly (WASM) support.
 
 ## License
 
