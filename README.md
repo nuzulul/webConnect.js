@@ -1,5 +1,5 @@
 # webConnect.js
-📶 Auto WebRTC Mesh P2P Connection
+📶 Auto WebRTC Mesh P2P Network
 
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
 
@@ -136,6 +136,31 @@ connect.getConnection((attribute) => console.log(`${attribute.connection}`))
 </script>
 ```
 
+```javascript
+import webconnect from 'webconnect'
+
+void async function main() {
+
+	const connect = webconnect({})
+	connect.onConnect(async(attribute)=>{
+		console.log("Connect",attribute)
+		connect.Send("hello",{connectId:attribute.connectId})
+		console.log(await connect.Ping({connectId:attribute.connectId}))
+		connect.getConnection((attribute)=>{
+			console.log("Connection",attribute)
+		})
+	})
+	connect.onDisconnect((attribute)=>{
+		console.log("Disconnect",attribute)
+	})
+	
+	connect.onReceive((data,attribute) =>{
+		console.log(data,attribute)
+	})
+	
+}()
+```
+
 ## API
 
 ### Connect to a channel
@@ -253,7 +278,7 @@ Disconnect()
 
 ## Related
 
-- [WebPEER](https://github.com/nuzulul/webpeerjs) - WebPEER is a novel decentralized P2P network overlay inside browser with a chance of working.
+- [WebPEER](https://github.com/nuzulul/webpeerjs) - WebPEER is a novel decentralized P2P network overlay in browser-side with a chance of working.
 - [RingsNetwork](https://github.com/RingsNetwork/rings) - Rings is a structured peer-to-peer network implementation using WebRTC, Chord DHT, and full WebAssembly (WASM) support.
 
 ## License
