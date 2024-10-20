@@ -1,5 +1,5 @@
 # webConnect.js
-📶 Auto WebRTC Mesh P2P Network
+📶 Auto WebRTC Mesh P2P Network without signaling server.
 
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
 
@@ -17,8 +17,23 @@ A direct browser to browser connection for static client side web application is
 
 ## Features
 
-* ✅ Auto WebRTC mesh p2p connection
-* ✅ Zero configuration for local network connection
+* ✅ Auto WebRTC mesh p2p connection.
+* ✅ No need setup signaling server.
+* ✅ Zero configuration for local network connection.
+
+## Ideas
+
+- P2P Chat
+- P2P File Transfer
+- P2P Video Call
+- P2P Media Streaming
+- P2P Game
+- P2P Screen Sharing
+- P2P Camera
+
+## Example
+
+- [WIFIDrop](https://github.com/nuzulul/wifidrop) - Instant transfer unlimited size of files over WIFI powered by WebRTC.
 
 ## Installation
 
