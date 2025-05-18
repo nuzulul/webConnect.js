@@ -293,7 +293,7 @@ Disconnect()
 
 ## Related
 
-- [WebPEER](https://github.com/nuzulul/webpeerjs) - WebPEER is a novel decentralized P2P network overlay in browser-side with a chance of working.
+- [WebPEER](https://github.com/nuzulul/webpeerjs) - WebPEER is a P2P Network that Runs in a Browser.
 - [RingsNetwork](https://github.com/RingsNetwork/rings) - Rings is a structured peer-to-peer network implementation using WebRTC, Chord DHT, and full WebAssembly (WASM) support.
 
 ## License
