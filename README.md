@@ -1,5 +1,5 @@
 # webConnect.js
-📶 Auto WebRTC Mesh P2P Network without signaling server.
+📶 webConnect.js is auto WebRTC Mesh P2P Network without signaling server.
 
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
 
@@ -33,17 +33,17 @@ A direct browser to browser connection for static client side web application is
 
 ## Example
 
-- [WIFIDrop](https://github.com/nuzulul/wifidrop) - Instant transfer unlimited size of files over WIFI powered by WebRTC.
+- [WIFIDrop](https://github.com/nuzulul/wifidrop) - Local peer-to-peer file transfer via WIFI with auto discovery alternative to AirDrop and LocalSend.
 
 ## Installation
 
 CDN
 ```javascript
-<script src="https://cdn.jsdelivr.net/npm/webconnect@0.0.10/dist/umd/webconnect.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/webconnect/dist/umd/webconnect.js"></script>
 ```
 ```javascript
 <script type="module">
-	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.10/dist/esm/webconnect.js'
+	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect/dist/esm/webconnect.js'
 </script>
 ```
 
@@ -51,7 +51,7 @@ Browserify / NPM
 ```javascript
 npm install webconnect
 
-//Common JS 
+//Browserify
 const webconnect = require('webconnect')
 
 //ES Module
@@ -128,11 +128,11 @@ Get All Connection Id
 connect.getConnection((attribute) => console.log(`${attribute.connection}`))
 ```
 ## Example
+CDN
 ```javascript
-<script type="module">
-	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect@0.0.10/dist/esm/webconnect.js'
-	
-	const connect = webconnect({})
+<script src="https://cdn.jsdelivr.net/npm/webconnect/dist/umd/webconnect.js"></script>
+<script>
+	const connect = webconnect()
 	connect.onConnect(async(attribute)=>{
 		console.log("Connect",attribute)
 		connect.Send("hello",{connectId:attribute.connectId})
@@ -150,13 +150,12 @@ connect.getConnection((attribute) => console.log(`${attribute.connection}`))
 	})
 </script>
 ```
-
+CDN ESM
 ```javascript
-import webconnect from 'webconnect'
-
-void async function main() {
-
-	const connect = webconnect({})
+<script type="module">
+	import webconnect from 'https://cdn.jsdelivr.net/npm/webconnect/dist/esm/webconnect.js'
+	
+	const connect = webconnect()
 	connect.onConnect(async(attribute)=>{
 		console.log("Connect",attribute)
 		connect.Send("hello",{connectId:attribute.connectId})
@@ -172,8 +171,30 @@ void async function main() {
 	connect.onReceive((data,attribute) =>{
 		console.log(data,attribute)
 	})
+</script>
+```
+NPM
+```javascript
+import webconnect from 'webconnect'
+
+const connect = webconnect()
+connect.onConnect(async(attribute)=>{
+	console.log("Connect",attribute)
+	connect.Send("hello",{connectId:attribute.connectId})
+	console.log(await connect.Ping({connectId:attribute.connectId}))
+	connect.getConnection((attribute)=>{
+		console.log("Connection",attribute)
+	})
+})
+connect.onDisconnect((attribute)=>{
+	console.log("Disconnect",attribute)
+})
+
+connect.onReceive((data,attribute) =>{
+	console.log(data,attribute)
+})
 	
-}()
+
 ```
 
 ## API

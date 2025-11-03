@@ -12,8 +12,8 @@
 
 	<script src="./../public/bundle/webconnect.umd.js"></script>
 	<script>
-		void async function main() {
-				const w = webconnect({})
+		//void async function main() {
+				const w = webconnect()
 				w.onConnect(async(data)=>{
 					console.log(data)
 					w.Send("hello",{connectId:data.connectId})
@@ -30,7 +30,7 @@
 				w.onReceive((data,connectId) =>{
 					console.log(data)
 				})
-		}()
+		//}()
 	</script>
 </body>
 

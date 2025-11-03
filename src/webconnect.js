@@ -1,8 +1,8 @@
 //! Copyright Nuzulul Zulkarnain. Released under The MIT License.
 //! webConnect.js -- https://github.com/nuzulul/webConnect.js
-import * as joinRoomTORRENT from 'trystero'
-import * as joinRoomNOSTR from 'trystero/nostr'
-import * as joinRoomMQTT from 'trystero/mqtt'
+import * as joinRoomTORRENT from 'trystero/torrent';
+import * as joinRoomNOSTR from 'trystero';
+import * as joinRoomMQTT from 'trystero/mqtt';
 
 class webConnect{
 	
@@ -355,11 +355,15 @@ class webConnect{
 	
 }
 
-export function webconnect({
-			appName = "webConnect",
-			channelName = "webConnectChannel",
-			connectPassword = "Browser to browser connection without server",
-			iceConfiguration = {
+export function webconnect(options){
+	
+	let appName = "webConnect";
+	
+	let channelName = "webConnectChannel";
+	
+	let connectPassword = "Browser to browser connection without server";
+	
+    let iceConfiguration = {
 				iceServers: [
 					{
 						urls: 'stun:stun.l.google.com:19302',
@@ -368,16 +372,38 @@ export function webconnect({
 						urls: 'stun:global.stun.twilio.com:3478',
 					}
 			  ]
-			}
-}){
+			};
+			
+	let relayTORRENT;
+	let relayNOSTR;
+	let relayMQTT;
+
+	if(typeof(options) === 'object'){
+		if(options.appName)appName = options.appName;
+		if(options.channelName)channelName = options.channelName;
+		if(options.connectPassword)connectPassword = options.connectPassword;
+		if(options.iceConfiguration)iceConfiguration = options.iceConfiguration;
+		if(options.relayTORRENT)relayTORRENT = options.relayTORRENT;
+		if(options.relayNOSTR)relayNOSTR = options.relayNOSTR;
+		if(options.relayMQTT)relayMQTT = options.relayMQTT;
+	}
 
 	const config = {appId: appName,password:connectPassword,rtcConfig:iceConfiguration}
 	
-	const roomTORRENT = joinRoomTORRENT.joinRoom(config, channelName)
+	let configTORRENT = JSON.parse(JSON.stringify(config));
+	if(relayTORRENT)configTORRENT.relayUrls = relayTORRENT;
 	
-	const roomNOSTR = joinRoomNOSTR.joinRoom(config, channelName)
+	let configNOSTR = JSON.parse(JSON.stringify(config));
+	if(relayNOSTR)configNOSTR.relayUrls = relayNOSTR;
 	
-	const roomMQTT = joinRoomMQTT.joinRoom(config, channelName)
+	let configMQTT = JSON.parse(JSON.stringify(config));
+	if(relayMQTT)configMQTT.relayUrls = relayMQTT;
+	
+	const roomTORRENT = joinRoomTORRENT.joinRoom(configTORRENT, channelName);
+	
+	const roomNOSTR = joinRoomNOSTR.joinRoom(configNOSTR, channelName)
+	
+	const roomMQTT = joinRoomMQTT.joinRoom(configMQTT, channelName)
 
 	const db = false
 
