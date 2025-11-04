@@ -357,6 +357,36 @@ class webConnect{
 
 export function webconnect(options){
 	
+	//https://tobyho.com/2012/07/27/taking-over-console-log/
+	function takeOverConsole(){
+		var console = window.console
+		if (!console) return
+		function intercept(method){
+			var original = console[method]
+			console[method] = function(...args){
+				// do sneaky stuff
+				const modifiedArgs = args.map(arg => typeof arg === 'string' ? arg.replaceAll('Trystero','webConnect.js') : arg);
+				if (original.apply){
+					// Do this for normal browsers
+					original.apply(console, modifiedArgs)
+				}else{
+					// Do this for IE
+					var message = Array.prototype.slice.apply(modifiedArgs).join(' ')
+					original(message)
+				}
+			}
+		}
+		var methods = [
+			//'log', 
+			'warn', 
+			//'error'
+			]
+		for (var i = 0; i < methods.length; i++)
+			intercept(methods[i])
+	}	
+	
+	takeOverConsole();
+	
 	let appName = "webConnect";
 	
 	let channelName = "webConnectChannel";
