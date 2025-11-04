@@ -404,30 +404,30 @@ export function webconnect(options){
 			  ]
 			};
 			
-	let relayTORRENT;
-	let relayNOSTR;
-	let relayMQTT;
+	let TORRENTtrackers;
+	let NOSTRrelays;
+	let MQTTbrokers;
 
 	if(typeof(options) === 'object'){
 		if(options.appName)appName = options.appName;
 		if(options.channelName)channelName = options.channelName;
 		if(options.connectPassword)connectPassword = options.connectPassword;
 		if(options.iceConfiguration)iceConfiguration = options.iceConfiguration;
-		if(options.relayTORRENT)relayTORRENT = options.relayTORRENT;
-		if(options.relayNOSTR)relayNOSTR = options.relayNOSTR;
-		if(options.relayMQTT)relayMQTT = options.relayMQTT;
+		if(options.TORRENTtrackers)TORRENTtrackers = options.TORRENTtrackers;
+		if(options.NOSTRrelays)NOSTRrelays = options.NOSTRrelays;
+		if(options.MQTTbrokers)MQTTbrokers = options.MQTTbrokers;
 	}
 
 	const config = {appId: appName,password:connectPassword,rtcConfig:iceConfiguration}
 	
 	let configTORRENT = JSON.parse(JSON.stringify(config));
-	if(relayTORRENT)configTORRENT.relayUrls = relayTORRENT;
+	if(TORRENTtrackers)configTORRENT.relayUrls = TORRENTtrackers;
 	
 	let configNOSTR = JSON.parse(JSON.stringify(config));
-	if(relayNOSTR)configNOSTR.relayUrls = relayNOSTR;
+	if(NOSTRrelays)configNOSTR.relayUrls = NOSTRrelays;
 	
 	let configMQTT = JSON.parse(JSON.stringify(config));
-	if(relayMQTT)configMQTT.relayUrls = relayMQTT;
+	if(MQTTbrokers)configMQTT.relayUrls = MQTTbrokers;
 	
 	const roomTORRENT = joinRoomTORRENT.joinRoom(configTORRENT, channelName);
 	
