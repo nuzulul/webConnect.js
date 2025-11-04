@@ -7,7 +7,7 @@ import * as joinRoomMQTT from 'trystero/mqtt';
 class webConnect{
 	
 	#connectpeers
-	#DB
+	//#DB
 	#TORRENT
 	#MQTT
 	#NOSTR 
@@ -20,13 +20,13 @@ class webConnect{
 		
 		this.#connectpeers = []
 		
-		const db = connect.db
+		//const db = connect.db
 		const torrent = connect.room.roomTORRENT
 		const nostr = connect.room.roomNOSTR
 		const mqtt = connect.room.roomMQTT
 		const MyId = connect.MyId
 		
-		this.#DB = db
+		//this.#DB = db
 		this.#TORRENT = torrent
 		this.#MQTT = mqtt
 		this.#NOSTR = nostr
@@ -42,7 +42,7 @@ class webConnect{
 
 		torrent.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(stream,peerId,metadata, "torrent",this.#onStream);})
 		nostr.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(stream,peerId,metadata, "nostr",this.#onStream);})
-		mqtt.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(setream,peerId,metadata, "mqtt",this.#onStream);})
+		mqtt.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(stream,peerId,metadata, "mqtt",this.#onStream);})
 		
 		const [torrentsendData, torrentgetData, torrentonDataProgress] = torrent.makeAction('data')
 		this.#torrentsendData = torrentsendData
@@ -147,7 +147,7 @@ class webConnect{
 					this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "mqtt",this.#SendProgress);})
 					this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "nostr",this.#SendProgress);})
 				}else{
-					this.#connectpeers.forEach((peer,index)=>{
+					this.#connectpeers.forEach((peer)=>{
 						let engine = peer.engine
 						if(engine.includes("torrent")){
 							this.#torrentsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "torrent",this.#SendProgress);})
@@ -198,17 +198,17 @@ class webConnect{
 		}
 	}
 	
-	#fping(peerId,protocol){
+	/*#fping(peerId,protocol){
 		
 		this.#fsendData(protocol,"webconnectping",peerId)
-	}
+	}*/
 	
 	#fpong(peerId,protocol){
 		
 		this.#fsendData(protocol,"webconnectpong",peerId)
 	}
 	
-	#loopping(){
+	/*#loopping(){
 		let timerId = setInterval(() => {
 			this.#fping(null)
 			const d = new Date()
@@ -222,7 +222,7 @@ class webConnect{
 				})
 			})
 		}, 10000);
-	}
+	}*/
 	
 	#onJoin = () => {}	
 	onConnect = f => (this.#onJoin = f)
@@ -247,7 +247,7 @@ class webConnect{
 		let peerId = attribute.connectId
 		let metadata = attribute.metadata
 		if(peerId == null){
-			this.#connectpeers.forEach((peer,index)=>{
+			this.#connectpeers.forEach((peer)=>{
 				let engine = peer.engine
 				if(engine.includes("torrent")){
 					this.#TORRENT.addStream(stream, peer.id, metadata)
@@ -282,9 +282,9 @@ class webConnect{
 	closeStreaming(stream,attribute){
 		let peerId = attribute.connectId
 		if(peerId == null){
-			this.#connectpeers.forEach((peer,index)=>{
+			this.#connectpeers.forEach((peer)=>{
 				let engine = peer.engine
-				engine.forEach((protocol,idx)=>{
+				engine.forEach((protocol)=>{
 						if(protocol == "torrent")this.#TORRENT.removeStream(stream, peer.id)
 						if(protocol == "mqtt")this.#MQTT.removeStream(stream, peer.id)
 						if(protocol == "nostr")this.#NOSTR.removeStream(stream, peer.id)
@@ -340,7 +340,7 @@ class webConnect{
 
 	getConnection(f){
 		let data = []
-		this.#connectpeers.forEach((peer,index)=>{
+		this.#connectpeers.forEach((peer)=>{
 			data.push(peer.id)
 		})
 		const connections = this.#TORRENT.getPeers() || this.#MQTT.getPeers() || this.#NOSTR.getPeers()

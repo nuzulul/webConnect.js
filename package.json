@@ -29,6 +29,7 @@
     "gh-deploy": "git push origin :gh-pages && git subtree push --prefix docs origin gh-pages",
     "doc": "git add docs -f && git commit -m \"docs\" && npm run gh-deploy && git reset --soft HEAD~ && git restore --staged .",
     "test-all": "nodemon -e js,ts --watch src --watch test --exec \"npm run build-dev-cjs && node public/cjs/test/test-all.js\"",
+	"lint": "npx eslint src/webconnect.js",
     "test": "npm run test-all"
   },
   "files": [
@@ -66,6 +67,7 @@
     "@rollup/plugin-commonjs": "^28.0.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-typescript": "^12.1.0",
+    "eslint": "^9.39.1",
     "nodemon": "^3.1.7",
     "rollup": "^4.23.0",
     "tslib": "^2.7.0",
