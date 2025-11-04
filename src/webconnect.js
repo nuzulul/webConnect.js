@@ -404,30 +404,32 @@ export function webconnect(options){
 			  ]
 			};
 			
-	let TORRENTtrackers;
-	let NOSTRrelays;
-	let MQTTbrokers;
+	let torrentTrackers;
+	let nostrRelays;
+	let mqttBrokers;
 
 	if(typeof(options) === 'object'){
 		if(options.appName)appName = options.appName;
 		if(options.channelName)channelName = options.channelName;
 		if(options.connectPassword)connectPassword = options.connectPassword;
 		if(options.iceConfiguration)iceConfiguration = options.iceConfiguration;
-		if(options.TORRENTtrackers)TORRENTtrackers = options.TORRENTtrackers;
-		if(options.NOSTRrelays)NOSTRrelays = options.NOSTRrelays;
-		if(options.MQTTbrokers)MQTTbrokers = options.MQTTbrokers;
+		if(options.torrentTrackers)torrentTrackers = options.torrentTrackers;
+		if(options.nostrRelays)nostrRelays = options.nostrRelays;
+		if(options.mqttBrokers)mqttBrokers = options.mqttBrokers;
 	}
+	
+	let rtcConfiguration = {config:iceConfiguration}
 
-	const config = {appId: appName,password:connectPassword,rtcConfig:iceConfiguration}
+	const config = {appId: appName,password:connectPassword,rtcConfig:rtcConfiguration}
 	
 	let configTORRENT = JSON.parse(JSON.stringify(config));
-	if(TORRENTtrackers)configTORRENT.relayUrls = TORRENTtrackers;
+	if(torrentTrackers)configTORRENT.relayUrls = torrentTrackers;
 	
 	let configNOSTR = JSON.parse(JSON.stringify(config));
-	if(NOSTRrelays)configNOSTR.relayUrls = NOSTRrelays;
+	if(nostrRelays)configNOSTR.relayUrls = nostrRelays;
 	
 	let configMQTT = JSON.parse(JSON.stringify(config));
-	if(MQTTbrokers)configMQTT.relayUrls = MQTTbrokers;
+	if(mqttBrokers)configMQTT.relayUrls = mqttBrokers;
 	
 	const roomTORRENT = joinRoomTORRENT.joinRoom(configTORRENT, channelName);
 	

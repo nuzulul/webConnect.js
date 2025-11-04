@@ -202,16 +202,17 @@ connect.onReceive((data,attribute) =>{
 ### Connect to a channel
 
 ```javascript
-webconnect({appName,channelName,connectPassword,iceConfiguration,TORRENTtrackers})
+const options = {appName,channelName,connectPassword,iceConfiguration,torrentTrackers,nostrRelays,mqttBrokers}
+webconnect(options)
 ```
 options :
 - appName - (String) Your app identity
 - channelName - (String) Channel to connect
 - connectPassword - (String) Password to encrypt connection initialization
 - iceConfiguration - (Object) Custom [iceConfiguration](https://webrtc.org/getting-started/turn-server)
-- TORRENTtrackers - (Array) Custom list of TORRENT trackers
-- NOSTRrelays - (Array) Custom list of NOSTR relays
-- MQTTbrokers - (Array) Custom list of MQTT brokers
+- torrentTrackers - (Array) Custom list of TORRENT trackers
+- nostrRelays - (Array) Custom list of NOSTR relays
+- mqttBrokers - (Array) Custom list of MQTT brokers
 
 ### Listen to every new connection
 
