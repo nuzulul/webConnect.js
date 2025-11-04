@@ -30,6 +30,7 @@
     "doc": "git add docs -f && git commit -m \"docs\" && npm run gh-deploy && git reset --soft HEAD~ && git restore --staged .",
     "test-all": "nodemon -e js,ts --watch src --watch test --exec \"npm run build-dev-cjs && node public/cjs/test/test-all.js\"",
 	"lint": "npx eslint src/webconnect.js",
+	"standard" : "npx standard --fix",
     "test": "npm run test-all"
   },
   "files": [

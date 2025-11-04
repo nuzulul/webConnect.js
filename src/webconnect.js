@@ -1,453 +1,428 @@
 //! Copyright Nuzulul Zulkarnain. Released under The MIT License.
 //! webConnect.js -- https://github.com/nuzulul/webConnect.js
-import * as joinRoomTORRENT from 'trystero/torrent';
-import * as joinRoomNOSTR from 'trystero';
-import * as joinRoomMQTT from 'trystero/mqtt';
+import * as joinRoomTORRENT from 'trystero/torrent'
+import * as joinRoomNOSTR from 'trystero'
+import * as joinRoomMQTT from 'trystero/mqtt'
 
-class webConnect{
-	
-	#connectpeers
-	//#DB
-	#TORRENT
-	#MQTT
-	#NOSTR 
-	#torrentsendData
-	#nostrsendData
-	#mqttsendData
-	#MyId
-	
-	constructor(connect){
-		
-		this.#connectpeers = []
-		
-		//const db = connect.db
-		const torrent = connect.room.roomTORRENT
-		const nostr = connect.room.roomNOSTR
-		const mqtt = connect.room.roomMQTT
-		const MyId = connect.MyId
-		
-		//this.#DB = db
-		this.#TORRENT = torrent
-		this.#MQTT = mqtt
-		this.#NOSTR = nostr
-		this.#MyId = MyId
-		
-		torrent.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "torrent",this.#onJoin);})
-		nostr.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "nostr",this.#onJoin);})
-		mqtt.onPeerJoin((peerId)=>{this.#onconnectPeerJoin(peerId, "mqtt",this.#onJoin);})
+class WebConnect {
+  #connectpeers
+  // #DB
+  #TORRENT
+  #MQTT
+  #NOSTR
+  #torrentsendData
+  #nostrsendData
+  #mqttsendData
+  #MyId
 
-		torrent.onPeerLeave((peerId)=>{this.#onconnectPeerLeave(peerId, "torrent",this.#onLeave);})
-		nostr.onPeerLeave((peerId)=>{this.#onconnectPeerLeave(peerId, "nostr",this.#onLeave);})
-		mqtt.onPeerLeave((peerId)=>{this.#onconnectPeerLeave(peerId, "mqtt",this.#onLeave);})
+  constructor (connect) {
+    this.#connectpeers = []
 
-		torrent.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(stream,peerId,metadata, "torrent",this.#onStream);})
-		nostr.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(stream,peerId,metadata, "nostr",this.#onStream);})
-		mqtt.onPeerStream((stream,peerId,metadata)=>{this.#onconnectPeerStream(stream,peerId,metadata, "mqtt",this.#onStream);})
-		
-		const [torrentsendData, torrentgetData, torrentonDataProgress] = torrent.makeAction('data')
-		this.#torrentsendData = torrentsendData
-		torrentgetData((data, peerId, metadata) => this.#fgetData(data, peerId, metadata, "torrent",this.#onGet))
-		torrentonDataProgress((percent, peerId, metadata) => {this.#onconnectReceiveProggress(percent, peerId, metadata,"torrent",this.#ReceiveProgress)})
+    // const db = connect.db
+    const torrent = connect.room.roomTORRENT
+    const nostr = connect.room.roomNOSTR
+    const mqtt = connect.room.roomMQTT
+    const MyId = connect.MyId
 
-		const [nostrsendData, nostrgetData, nostronDataProgress] = nostr.makeAction('data')
-		this.#nostrsendData = nostrsendData
-		nostrgetData((data, peerId, metadata) => this.#fgetData(data, peerId, metadata, "nostr",this.#onGet))
-		nostronDataProgress((percent, peerId, metadata) => {this.#onconnectReceiveProggress(percent, peerId, metadata,"mqtt",this.#ReceiveProgress)})
+    // this.#DB = db
+    this.#TORRENT = torrent
+    this.#MQTT = mqtt
+    this.#NOSTR = nostr
+    this.#MyId = MyId
 
-		const [mqttsendData, mqttgetData, mqttonDataProgress] = mqtt.makeAction('data')
-		this.#mqttsendData = mqttsendData
-		mqttgetData((data, peerId, metadata) => this.#fgetData(data, peerId, metadata, "mqtt",this.#onGet))
-		mqttonDataProgress((percent, peerId, metadata) => {this.#onconnectReceiveProggress(percent, peerId, metadata,"nostr",this.#ReceiveProgress)})
-		
-		//this.#loopping()
-		
-	}
-	
-	#onconnectPeerJoin(peerId, protocol,callback){
-		let peer ={id:peerId,engine:[protocol],online:{}}
-		const searchPeer = this.#connectpeers.findIndex((peer) => peer.id==peerId)
-		if(searchPeer == -1){
-			this.#connectpeers.push(peer)
-			let connectoutput = {connectId:peerId}
-			callback(connectoutput)
-		}else{
-			let engine = this.#connectpeers[searchPeer].engine
-			if(!engine.includes(protocol))this.#connectpeers[searchPeer].engine.push(protocol)
-		}
-		//this.#fping(peerId,protocol)
-	}
-	
-	#onconnectPeerLeave(peerId, protocol,callback){
-		const searchPeer = this.#connectpeers.findIndex((peer) => peer.id==peerId)
-		if(searchPeer > -1){
-			let engine = this.#connectpeers[searchPeer].engine
-			const searchEngine = engine.findIndex((item) => item==protocol)
-			if(searchEngine > -1){
-				this.#connectpeers[searchPeer].engine.splice(searchEngine, 1)
-				if(this.#connectpeers[searchPeer].engine.length == 0){
-					this.#connectpeers.splice(searchPeer, 1)
-					let connectoutput = {connectId:peerId}
-					callback(connectoutput)
-				}
-			}
-		}
-	}
-	
-	#onconnectPeerStream(stream,peerId,metadata,protocol,callback){
-		let connectoutput = {connectId:peerId,metadata}
-		callback(stream,connectoutput)
-	}
-	
-	#fsendData(protocol,payload,arrpeers,objmetadata){
-		if(protocol !== "" && protocol != undefined){
-			if(protocol == "torrent"){
-				this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "torrent",this.#SendProgress);})
-			}else if(protocol == "mqtt"){
-				this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "mqtt",this.#SendProgress);})
-			}else if(protocol == "nostr"){
-				this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "nostr",this.#SendProgress);})
-			}
-		}else{
-			if(arrpeers != null&&Array.isArray(arrpeers)){
-				for(const id of arrpeers){
-					const searchPeer = this.#connectpeers.findIndex((peer) => peer.id==id)
-					if(searchPeer > -1){
-						let engine = this.#connectpeers[searchPeer].engine
-						if(engine.includes("torrent")){
-							this.#torrentsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "torrent",this.#SendProgress);})
-						}
-						else if (engine.includes("mqtt")){
-							this.#mqttsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "mqtt",this.#SendProgress);})
-						}
-						else if (engine.includes("nostr")){
-							this.#nostrsendData(payload,id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "nostr",this.#SendProgress);})
-						}
-					}
-					
-				}
-			}else if(arrpeers != null&&typeof arrpeers === 'string'){
-					const searchPeer = this.#connectpeers.findIndex((peer) => peer.id==arrpeers)
-					if(searchPeer > -1){
-						let engine = this.#connectpeers[searchPeer].engine
-						if(engine.includes("torrent")){
-							this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "torrent",this.#SendProgress);})
-						}
-						else if (engine.includes("mqtt")){
-							this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "mqtt",this.#SendProgress);})
-						}
-						else if (engine.includes("nostr")){
-							this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "nostr",this.#SendProgress);})
-						}
-					}
-					
-			
-			}else{
-				if(payload == "webconnectping"){
-					this.#torrentsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "torrent",this.#SendProgress);})
-					this.#mqttsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "mqtt",this.#SendProgress);})
-					this.#nostrsendData(payload,arrpeers,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "nostr",this.#SendProgress);})
-				}else{
-					this.#connectpeers.forEach((peer)=>{
-						let engine = peer.engine
-						if(engine.includes("torrent")){
-							this.#torrentsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "torrent",this.#SendProgress);})
-						}
-						else if (engine.includes("mqtt")){
-							this.#mqttsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "mqtt",this.#SendProgress);})
-						}
-						else if (engine.includes("nostr")){
-							this.#nostrsendData(payload,peer.id,objmetadata,(percent, peerId)=>{this.#onconnectSendProggress(percent,peerId,objmetadata, "nostr",this.#SendProgress);})
-						}
-					})
-				}
-			}
-		}
-	}
-	
-	#onconnectSendProggress(percent, peerId,metadata,protocol,callback){
-		let connectoutput = {percent,connectId:peerId,metadata}
-		callback(connectoutput)
-	}
-	
-	#onconnectReceiveProggress(percent, peerId, metadata,protocol,callback){
-		let connectoutput = {percent,connectId:peerId,metadata}
-		callback(connectoutput)
-	}
-	
-	#fgetData(data, peerId, metadata,protocol,callback){
-		
-		if(typeof data === 'string' && data=="webconnectping"){
-			this.#fpong(peerId,protocol)			
-		}else if(typeof data === 'string' && data=="webconnectpong"){
-			const searchPeer = this.#connectpeers.findIndex((peer) => peer.id==peerId)
-			if(searchPeer > -1){
-				const d = new Date()
-				let time = d.getTime()
-				if(protocol == "torrent"){
-					this.#connectpeers[searchPeer].online.torrent = time
-				}else if(protocol == "mqtt"){
-					this.#connectpeers[searchPeer].online.mqtt = time
-				}else if(protocol == "nostr"){
-					this.#connectpeers[searchPeer].online.nostr = time
-				}
-			}
-			
-		}else{
-			let connectoutput = {connectId:peerId,metadata}
-			callback(data, connectoutput)
-		}
-	}
-	
-	/*#fping(peerId,protocol){
-		
-		this.#fsendData(protocol,"webconnectping",peerId)
-	}*/
-	
-	#fpong(peerId,protocol){
-		
-		this.#fsendData(protocol,"webconnectpong",peerId)
-	}
-	
-	/*#loopping(){
-		let timerId = setInterval(() => {
-			this.#fping(null)
-			const d = new Date()
-			let time = d.getTime()
-			this.#connectpeers.forEach((peer,idx1)=>{
-				peer.engine.forEach((protocol,idx2)=>{
-					let limit = 30*1000
-					if(time - peer.online[protocol] > limit){
-						this.#connectpeers[idx1].engine.splice(idx2, 1)
-					}
-				})
-			})
-		}, 10000);
-	}*/
-	
-	#onJoin = () => {}	
-	onConnect = f => (this.#onJoin = f)
+    torrent.onPeerJoin((peerId) => { this.#onconnectPeerJoin(peerId, 'torrent', this.#onJoin) })
+    nostr.onPeerJoin((peerId) => { this.#onconnectPeerJoin(peerId, 'nostr', this.#onJoin) })
+    mqtt.onPeerJoin((peerId) => { this.#onconnectPeerJoin(peerId, 'mqtt', this.#onJoin) })
 
-	#onLeave = () => {}	
-	onDisconnect = f => (this.#onLeave = f)
-	
-	Send(data,attribute){
-		this.#fsendData("",data,attribute.connectId,attribute.metadata)
-	}
-	
-	#onGet = () => {}
-	onReceive = f => (this.#onGet = f)
+    torrent.onPeerLeave((peerId) => { this.#onconnectPeerLeave(peerId, 'torrent', this.#onLeave) })
+    nostr.onPeerLeave((peerId) => { this.#onconnectPeerLeave(peerId, 'nostr', this.#onLeave) })
+    mqtt.onPeerLeave((peerId) => { this.#onconnectPeerLeave(peerId, 'mqtt', this.#onLeave) })
 
-	#SendProgress = () => {}
-	onSendProgress = f => (this.#SendProgress = f)
+    torrent.onPeerStream((stream, peerId, metadata) => { this.#onconnectPeerStream(stream, peerId, metadata, 'torrent', this.#onStream) })
+    nostr.onPeerStream((stream, peerId, metadata) => { this.#onconnectPeerStream(stream, peerId, metadata, 'nostr', this.#onStream) })
+    mqtt.onPeerStream((stream, peerId, metadata) => { this.#onconnectPeerStream(stream, peerId, metadata, 'mqtt', this.#onStream) })
 
-	#ReceiveProgress = () => {}
-	onReceiveProgress = f => (this.#ReceiveProgress = f)
-	
-	openStreaming(stream,attribute){
-		let peerId = attribute.connectId
-		let metadata = attribute.metadata
-		if(peerId == null){
-			this.#connectpeers.forEach((peer)=>{
-				let engine = peer.engine
-				if(engine.includes("torrent")){
-					this.#TORRENT.addStream(stream, peer.id, metadata)
-				}
-				else if (engine.includes("mqtt")){
-					this.#MQTT.addStream(stream, peer.id, metadata)
-				}
-				else if (engine.includes("nostr")){
-					this.#NOSTR.addStream(stream, peer.id, metadata)
-				}
-			})
-		}else{
-			const searchPeer = this.#connectpeers.findIndex((peer) => peer.id==peerId)
-			if(searchPeer > -1){
-				let engine = this.#connectpeers[searchPeer].engine
-				if(engine.includes("torrent")){
-					this.#TORRENT.addStream(stream, peerId, metadata)
-				}
-				else if (engine.includes("mqtt")){
-					this.#MQTT.addStream(stream, peerId, metadata)
-				}
-				else if (engine.includes("nostr")){
-					this.#NOSTR.addStream(stream, peerId, metadata)
-				}
-			}
-		}
-	}
+    const [torrentsendData, torrentgetData, torrentonDataProgress] = torrent.makeAction('data')
+    this.#torrentsendData = torrentsendData
+    torrentgetData((data, peerId, metadata) => this.#fgetData(data, peerId, metadata, 'torrent', this.#onGet))
+    torrentonDataProgress((percent, peerId, metadata) => { this.#onconnectReceiveProggress(percent, peerId, metadata, 'torrent', this.#ReceiveProgress) })
 
-	#onStream = () => {}
-	onStreaming = f => (this.#onStream = f)
-	
-	closeStreaming(stream,attribute){
-		let peerId = attribute.connectId
-		if(peerId == null){
-			this.#connectpeers.forEach((peer)=>{
-				let engine = peer.engine
-				engine.forEach((protocol)=>{
-						if(protocol == "torrent")this.#TORRENT.removeStream(stream, peer.id)
-						if(protocol == "mqtt")this.#MQTT.removeStream(stream, peer.id)
-						if(protocol == "nostr")this.#NOSTR.removeStream(stream, peer.id)
-				})
-			})	
-		}else if(typeof peerId === 'string'){
-			const searchPeer = this.#connectpeers.findIndex((peer) => peer.id==peerId)
-			if(searchPeer > -1){
-				let engine = this.#connectpeers[searchPeer].engine
-				if(engine.includes("torrent")){
-					this.#TORRENT.addStream(stream, peerId)
-				}
-				else if (engine.includes("mqtt")){
-					this.#MQTT.addStream(stream, peerId)
-				}
-				else if (engine.includes("nostr")){
-					this.#NOSTR.addStream(stream, peerId)
-				}
-			}
-		}
-	}
-	
-	async Ping(attribute){
-		let peerId = attribute.connectId
-		if(peerId == null){
-			return null
-		}else if(typeof peerId === 'string'){
-			const searchPeer = this.#connectpeers.findIndex((peer) => peer.id==peerId)
-			if(searchPeer > -1){
-				let engine = this.#connectpeers[searchPeer].engine
-				if(engine.includes("torrent")){
-					return await this.#TORRENT.ping(peerId)
-				}
-				else if (engine.includes("mqtt")){
-					return await this.#MQTT.ping(peerId)
-				}
-				else if (engine.includes("nostr")){
-					return await this.#NOSTR.ping(peerId)
-				}
-			}
-			
-		}else{
-			return []
-		}
-		
-	}
-	
-	Disconnect(){
-		if(Object.keys(this.#TORRENT.getPeers()).length !== 0)this.#TORRENT.leave()
-		if(Object.keys(this.#MQTT.getPeers()).length !== 0)this.#MQTT.leave()
-		if(Object.keys(this.#NOSTR.getPeers()).length !== 0)this.#NOSTR.leave()
-	}
+    const [nostrsendData, nostrgetData, nostronDataProgress] = nostr.makeAction('data')
+    this.#nostrsendData = nostrsendData
+    nostrgetData((data, peerId, metadata) => this.#fgetData(data, peerId, metadata, 'nostr', this.#onGet))
+    nostronDataProgress((percent, peerId, metadata) => { this.#onconnectReceiveProggress(percent, peerId, metadata, 'mqtt', this.#ReceiveProgress) })
 
-	getConnection(f){
-		let data = []
-		this.#connectpeers.forEach((peer)=>{
-			data.push(peer.id)
-		})
-		const connections = this.#TORRENT.getPeers() || this.#MQTT.getPeers() || this.#NOSTR.getPeers()
-		let output = {connection:data,connections}
-		f(output)
-	}
-	
-	getMyId(f){
-		let output = {connectId:this.#MyId}
-		f(output)
-	}
-	
+    const [mqttsendData, mqttgetData, mqttonDataProgress] = mqtt.makeAction('data')
+    this.#mqttsendData = mqttsendData
+    mqttgetData((data, peerId, metadata) => this.#fgetData(data, peerId, metadata, 'mqtt', this.#onGet))
+    mqttonDataProgress((percent, peerId, metadata) => { this.#onconnectReceiveProggress(percent, peerId, metadata, 'nostr', this.#ReceiveProgress) })
+
+    // this.#loopping()
+  }
+
+  #onconnectPeerJoin (peerId, protocol, callback) {
+    const peer = { id: peerId, engine: [protocol], online: {} }
+    const searchPeer = this.#connectpeers.findIndex((peer) => peer.id === peerId)
+    if (searchPeer === -1) {
+      this.#connectpeers.push(peer)
+      const connectoutput = { connectId: peerId }
+      callback(connectoutput)
+    } else {
+      const engine = this.#connectpeers[searchPeer].engine
+      if (!engine.includes(protocol)) this.#connectpeers[searchPeer].engine.push(protocol)
+    }
+    // this.#fping(peerId,protocol)
+  }
+
+  #onconnectPeerLeave (peerId, protocol, callback) {
+    const searchPeer = this.#connectpeers.findIndex((peer) => peer.id === peerId)
+    if (searchPeer > -1) {
+      const engine = this.#connectpeers[searchPeer].engine
+      const searchEngine = engine.findIndex((item) => item === protocol)
+      if (searchEngine > -1) {
+        this.#connectpeers[searchPeer].engine.splice(searchEngine, 1)
+        if (this.#connectpeers[searchPeer].engine.length === 0) {
+          this.#connectpeers.splice(searchPeer, 1)
+          const connectoutput = { connectId: peerId }
+          callback(connectoutput)
+        }
+      }
+    }
+  }
+
+  #onconnectPeerStream (stream, peerId, metadata, protocol, callback) {
+    const connectoutput = { connectId: peerId, metadata }
+    callback(stream, connectoutput)
+  }
+
+  #fsendData (protocol, payload, arrpeers, objmetadata) {
+    if (protocol !== '' && protocol !== undefined) {
+      if (protocol === 'torrent') {
+        this.#torrentsendData(payload, arrpeers, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'torrent', this.#SendProgress) })
+      } else if (protocol === 'mqtt') {
+        this.#mqttsendData(payload, arrpeers, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'mqtt', this.#SendProgress) })
+      } else if (protocol === 'nostr') {
+        this.#nostrsendData(payload, arrpeers, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'nostr', this.#SendProgress) })
+      }
+    } else {
+      if (arrpeers != null && Array.isArray(arrpeers)) {
+        for (const id of arrpeers) {
+          const searchPeer = this.#connectpeers.findIndex((peer) => peer.id === id)
+          if (searchPeer > -1) {
+            const engine = this.#connectpeers[searchPeer].engine
+            if (engine.includes('torrent')) {
+              this.#torrentsendData(payload, id, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'torrent', this.#SendProgress) })
+            } else if (engine.includes('mqtt')) {
+              this.#mqttsendData(payload, id, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'mqtt', this.#SendProgress) })
+            } else if (engine.includes('nostr')) {
+              this.#nostrsendData(payload, id, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'nostr', this.#SendProgress) })
+            }
+          }
+        }
+      } else if (arrpeers != null && typeof arrpeers === 'string') {
+        const searchPeer = this.#connectpeers.findIndex((peer) => peer.id === arrpeers)
+        if (searchPeer > -1) {
+          const engine = this.#connectpeers[searchPeer].engine
+          if (engine.includes('torrent')) {
+            this.#torrentsendData(payload, arrpeers, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'torrent', this.#SendProgress) })
+          } else if (engine.includes('mqtt')) {
+            this.#mqttsendData(payload, arrpeers, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'mqtt', this.#SendProgress) })
+          } else if (engine.includes('nostr')) {
+            this.#nostrsendData(payload, arrpeers, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'nostr', this.#SendProgress) })
+          }
+        }
+      } else {
+        if (payload === 'webconnectping') {
+          this.#torrentsendData(payload, arrpeers, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'torrent', this.#SendProgress) })
+          this.#mqttsendData(payload, arrpeers, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'mqtt', this.#SendProgress) })
+          this.#nostrsendData(payload, arrpeers, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'nostr', this.#SendProgress) })
+        } else {
+          this.#connectpeers.forEach((peer) => {
+            const engine = peer.engine
+            if (engine.includes('torrent')) {
+              this.#torrentsendData(payload, peer.id, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'torrent', this.#SendProgress) })
+            } else if (engine.includes('mqtt')) {
+              this.#mqttsendData(payload, peer.id, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'mqtt', this.#SendProgress) })
+            } else if (engine.includes('nostr')) {
+              this.#nostrsendData(payload, peer.id, objmetadata, (percent, peerId) => { this.#onconnectSendProggress(percent, peerId, objmetadata, 'nostr', this.#SendProgress) })
+            }
+          })
+        }
+      }
+    }
+  }
+
+  #onconnectSendProggress (percent, peerId, metadata, protocol, callback) {
+    const connectoutput = { percent, connectId: peerId, metadata }
+    callback(connectoutput)
+  }
+
+  #onconnectReceiveProggress (percent, peerId, metadata, protocol, callback) {
+    const connectoutput = { percent, connectId: peerId, metadata }
+    callback(connectoutput)
+  }
+
+  #fgetData (data, peerId, metadata, protocol, callback) {
+    if (typeof data === 'string' && data === 'webconnectping') {
+      this.#fpong(peerId, protocol)
+    } else if (typeof data === 'string' && data === 'webconnectpong') {
+      const searchPeer = this.#connectpeers.findIndex((peer) => peer.id === peerId)
+      if (searchPeer > -1) {
+        const d = new Date()
+        const time = d.getTime()
+        if (protocol === 'torrent') {
+          this.#connectpeers[searchPeer].online.torrent = time
+        } else if (protocol === 'mqtt') {
+          this.#connectpeers[searchPeer].online.mqtt = time
+        } else if (protocol === 'nostr') {
+          this.#connectpeers[searchPeer].online.nostr = time
+        }
+      }
+    } else {
+      const connectoutput = { connectId: peerId, metadata }
+      callback(data, connectoutput)
+    }
+  }
+
+  /* #fping (peerId, protocol) {
+    this.#fsendData(protocol, 'webconnectping', peerId)
+  } */
+
+  #fpong (peerId, protocol) {
+    this.#fsendData(protocol, 'webconnectpong', peerId)
+  }
+
+  /* #loopping () {
+    const timerId = setInterval(() => {
+      this.#fping(null)
+      const d = new Date()
+      const time = d.getTime()
+      this.#connectpeers.forEach((peer, idx1) => {
+        peer.engine.forEach((protocol, idx2) => {
+          const limit = 30 * 1000
+          if (time - peer.online[protocol] > limit) {
+            this.#connectpeers[idx1].engine.splice(idx2, 1)
+          }
+        })
+      })
+    }, 10000)
+  } */
+
+  #onJoin = () => {}
+  onConnect = f => (this.#onJoin = f)
+
+  #onLeave = () => {}
+  onDisconnect = f => (this.#onLeave = f)
+
+  Send (data, attribute) {
+    this.#fsendData('', data, attribute.connectId, attribute.metadata)
+  }
+
+  #onGet = () => {}
+  onReceive = f => (this.#onGet = f)
+
+  #SendProgress = () => {}
+  onSendProgress = f => (this.#SendProgress = f)
+
+  #ReceiveProgress = () => {}
+  onReceiveProgress = f => (this.#ReceiveProgress = f)
+
+  openStreaming (stream, attribute) {
+    const peerId = attribute.connectId
+    const metadata = attribute.metadata
+    if (peerId == null) {
+      this.#connectpeers.forEach((peer) => {
+        const engine = peer.engine
+        if (engine.includes('torrent')) {
+          this.#TORRENT.addStream(stream, peer.id, metadata)
+        } else if (engine.includes('mqtt')) {
+          this.#MQTT.addStream(stream, peer.id, metadata)
+        } else if (engine.includes('nostr')) {
+          this.#NOSTR.addStream(stream, peer.id, metadata)
+        }
+      })
+    } else {
+      const searchPeer = this.#connectpeers.findIndex((peer) => peer.id === peerId)
+      if (searchPeer > -1) {
+        const engine = this.#connectpeers[searchPeer].engine
+        if (engine.includes('torrent')) {
+          this.#TORRENT.addStream(stream, peerId, metadata)
+        } else if (engine.includes('mqtt')) {
+          this.#MQTT.addStream(stream, peerId, metadata)
+        } else if (engine.includes('nostr')) {
+          this.#NOSTR.addStream(stream, peerId, metadata)
+        }
+      }
+    }
+  }
+
+  #onStream = () => {}
+  onStreaming = f => (this.#onStream = f)
+
+  closeStreaming (stream, attribute) {
+    const peerId = attribute.connectId
+    if (peerId == null) {
+      this.#connectpeers.forEach((peer) => {
+        const engine = peer.engine
+        engine.forEach((protocol) => {
+          if (protocol === 'torrent') this.#TORRENT.removeStream(stream, peer.id)
+          if (protocol === 'mqtt') this.#MQTT.removeStream(stream, peer.id)
+          if (protocol === 'nostr') this.#NOSTR.removeStream(stream, peer.id)
+        })
+      })
+    } else if (typeof peerId === 'string') {
+      const searchPeer = this.#connectpeers.findIndex((peer) => peer.id === peerId)
+      if (searchPeer > -1) {
+        const engine = this.#connectpeers[searchPeer].engine
+        if (engine.includes('torrent')) {
+          this.#TORRENT.addStream(stream, peerId)
+        } else if (engine.includes('mqtt')) {
+          this.#MQTT.addStream(stream, peerId)
+        } else if (engine.includes('nostr')) {
+          this.#NOSTR.addStream(stream, peerId)
+        }
+      }
+    }
+  }
+
+  async Ping (attribute) {
+    const peerId = attribute.connectId
+    if (peerId == null) {
+      return null
+    } else if (typeof peerId === 'string') {
+      const searchPeer = this.#connectpeers.findIndex((peer) => peer.id === peerId)
+      if (searchPeer > -1) {
+        const engine = this.#connectpeers[searchPeer].engine
+        if (engine.includes('torrent')) {
+          return await this.#TORRENT.ping(peerId)
+        } else if (engine.includes('mqtt')) {
+          return await this.#MQTT.ping(peerId)
+        } else if (engine.includes('nostr')) {
+          return await this.#NOSTR.ping(peerId)
+        }
+      }
+    } else {
+      return []
+    }
+  }
+
+  Disconnect () {
+    if (Object.keys(this.#TORRENT.getPeers()).length !== 0) this.#TORRENT.leave()
+    if (Object.keys(this.#MQTT.getPeers()).length !== 0) this.#MQTT.leave()
+    if (Object.keys(this.#NOSTR.getPeers()).length !== 0) this.#NOSTR.leave()
+  }
+
+  getConnection (f) {
+    const data = []
+    this.#connectpeers.forEach((peer) => {
+      data.push(peer.id)
+    })
+    const connections = this.#TORRENT.getPeers() || this.#MQTT.getPeers() || this.#NOSTR.getPeers()
+    const output = { connection: data, connections }
+    f(output)
+  }
+
+  getMyId (f) {
+    const output = { connectId: this.#MyId }
+    f(output)
+  }
 }
 
-export function webconnect(options){
-	
-	//https://tobyho.com/2012/07/27/taking-over-console-log/
-	function takeOverConsole(){
-		var console = window.console
-		if (!console) return
-		function intercept(method){
-			var original = console[method]
-			console[method] = function(...args){
-				// do sneaky stuff
-				const modifiedArgs = args.map(arg => typeof arg === 'string' ? arg.replaceAll('Trystero','webConnect.js') : arg);
-				if (original.apply){
-					// Do this for normal browsers
-					original.apply(console, modifiedArgs)
-				}else{
-					// Do this for IE
-					var message = Array.prototype.slice.apply(modifiedArgs).join(' ')
-					original(message)
-				}
-			}
-		}
-		var methods = [
-			//'log', 
-			'warn', 
-			//'error'
-			]
-		for (var i = 0; i < methods.length; i++)
-			intercept(methods[i])
-	}	
-	
-	takeOverConsole();
-	
-	let appName = "webConnect";
-	
-	let channelName = "webConnectChannel";
-	
-	let connectPassword = "Browser to browser connection without server";
-	
-    let iceConfiguration = {
-				iceServers: [
-					{
-						urls: 'stun:stun.l.google.com:19302',
-					},
-					{
-						urls: 'stun:global.stun.twilio.com:3478',
-					}
-			  ]
-			};
-			
-	let torrentTrackers;
-	let nostrRelays;
-	let mqttBrokers;
+export function webconnect (options) {
+  // https://tobyho.com/2012/07/27/taking-over-console-log/
+  function takeOverConsole () {
+    const console = window.console
+    if (!console) return
+    function intercept (method) {
+      const original = console[method]
+      console[method] = function (...args) {
+        // do sneaky stuff
+        const modifiedArgs = args.map(arg => typeof arg === 'string' ? arg.replaceAll('Trystero', 'webConnect.js') : arg)
+        if (original.apply) {
+          // Do this for normal browsers
+          original.apply(console, modifiedArgs)
+        } else {
+          // Do this for IE
+          const message = Array.prototype.slice.apply(modifiedArgs).join(' ')
+          original(message)
+        }
+      }
+    }
+    const methods = [
+      // 'log',
+      'warn'
+      // 'error'
+    ]
+    for (let i = 0; i < methods.length; i++) { intercept(methods[i]) }
+  }
 
-	if(typeof(options) === 'object'){
-		if(options.appName)appName = options.appName;
-		if(options.channelName)channelName = options.channelName;
-		if(options.connectPassword)connectPassword = options.connectPassword;
-		if(options.iceConfiguration)iceConfiguration = options.iceConfiguration;
-		if(options.torrentTrackers)torrentTrackers = options.torrentTrackers;
-		if(options.nostrRelays)nostrRelays = options.nostrRelays;
-		if(options.mqttBrokers)mqttBrokers = options.mqttBrokers;
-	}
-	
-	let rtcConfiguration = {config:iceConfiguration}
+  takeOverConsole()
 
-	const config = {appId: appName,password:connectPassword,rtcConfig:rtcConfiguration}
-	
-	let configTORRENT = JSON.parse(JSON.stringify(config));
-	if(torrentTrackers)configTORRENT.relayUrls = torrentTrackers;
-	
-	let configNOSTR = JSON.parse(JSON.stringify(config));
-	if(nostrRelays)configNOSTR.relayUrls = nostrRelays;
-	
-	let configMQTT = JSON.parse(JSON.stringify(config));
-	if(mqttBrokers)configMQTT.relayUrls = mqttBrokers;
-	
-	const roomTORRENT = joinRoomTORRENT.joinRoom(configTORRENT, channelName);
-	
-	const roomNOSTR = joinRoomNOSTR.joinRoom(configNOSTR, channelName)
-	
-	const roomMQTT = joinRoomMQTT.joinRoom(configMQTT, channelName)
+  let appName = 'webConnect'
 
-	const db = false
+  let channelName = 'webConnectChannel'
 
-	const MyId = joinRoomTORRENT.selfId || joinRoomNOSTR.selfId || joinRoomMQTT.selfId
-	
-	const connect = {db:db,room:{
-		roomTORRENT,
-		roomNOSTR,
-		roomMQTT
-	},MyId}
+  let connectPassword = 'Browser to browser connection without server'
 
-	return new webConnect(connect)
+  let iceConfiguration = {
+    iceServers: [
+      {
+        urls: 'stun:stun.l.google.com:19302'
+      },
+      {
+        urls: 'stun:global.stun.twilio.com:3478'
+      }
+    ]
+  }
+
+  let torrentTrackers
+  let nostrRelays
+  let mqttBrokers
+
+  if (typeof (options) === 'object') {
+    if (options.appName)appName = options.appName
+    if (options.channelName)channelName = options.channelName
+    if (options.connectPassword)connectPassword = options.connectPassword
+    if (options.iceConfiguration)iceConfiguration = options.iceConfiguration
+    if (options.torrentTrackers)torrentTrackers = options.torrentTrackers
+    if (options.nostrRelays)nostrRelays = options.nostrRelays
+    if (options.mqttBrokers)mqttBrokers = options.mqttBrokers
+  }
+
+  const rtcConfiguration = { config: iceConfiguration }
+
+  const config = { appId: appName, password: connectPassword, rtcConfig: rtcConfiguration }
+
+  const configTORRENT = JSON.parse(JSON.stringify(config))
+  if (torrentTrackers)configTORRENT.relayUrls = torrentTrackers
+
+  const configNOSTR = JSON.parse(JSON.stringify(config))
+  if (nostrRelays)configNOSTR.relayUrls = nostrRelays
+
+  const configMQTT = JSON.parse(JSON.stringify(config))
+  if (mqttBrokers)configMQTT.relayUrls = mqttBrokers
+
+  const roomTORRENT = joinRoomTORRENT.joinRoom(configTORRENT, channelName)
+
+  const roomNOSTR = joinRoomNOSTR.joinRoom(configNOSTR, channelName)
+
+  const roomMQTT = joinRoomMQTT.joinRoom(configMQTT, channelName)
+
+  const db = false
+
+  const MyId = joinRoomTORRENT.selfId || joinRoomNOSTR.selfId || joinRoomMQTT.selfId
+
+  const connect = {
+    db,
+    room: {
+      roomTORRENT,
+      roomNOSTR,
+      roomMQTT
+    },
+    MyId
+  }
+
+  return new WebConnect(connect)
 }
 
 export default webconnect

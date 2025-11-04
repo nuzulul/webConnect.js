@@ -1,3 +1,3 @@
-import {webconnect} from './webconnect';
+import { webconnect } from './webconnect'
 
-export default webconnect;
+export default webconnect
