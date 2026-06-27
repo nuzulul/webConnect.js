@@ -1,0 +1,8 @@
+title: webConnect.js
+description: Auto WebRTC Mesh P2P Network without signaling server.
+google_analytics: 
+show_downloads: false
+theme: jekyll-theme-slate
+
+gems:
+  - jekyll-mentions

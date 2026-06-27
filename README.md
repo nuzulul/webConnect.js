@@ -3,7 +3,7 @@
 
 [![npm version](https://badge.fury.io/js/webconnect.svg)](https://www.npmjs.com/package/webconnect)
 
-Demo : [https://nuzulul.github.io/webConnect.js/demo/](https://nuzulul.github.io/webConnect.js/demo/)
+[>DEMO<](https://nuzulul.github.io/webConnect.js/demo/)
 
 ![webConnect.js](webconnectjs.png)
 
@@ -316,8 +316,9 @@ Ping(attribute)
 Disconnect()
 ```
 
-## Related
+## See Also
 
+- [p2p.js](https://github.com/nuzulul/p2p.js) - Alternative simple api WebRTC library with auto matchmaking without signaling server.
 - [WebPEER](https://github.com/nuzulul/webpeerjs) - WebPEER is a P2P Network that Runs in a Browser.
 
 ## License
